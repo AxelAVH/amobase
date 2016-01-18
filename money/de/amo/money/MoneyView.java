@@ -2,8 +2,9 @@ package de.amo.money;
 
 import de.amo.tools.ConditionChecker;
 import de.amo.view.*;
-import de.amo.view.cellrenderer.DatumsCellrenderer;
+import de.amo.view.cellrenderer.ADatumCellrenderer;
 import de.amo.view.cellrenderer.Integer2FloatCellRenderer;
+import de.amo.view.table.ATableForm;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -55,7 +56,7 @@ public class MoneyView extends JFrame {
 
     private MyActionListener actionListener;
 
-    private DefaultTableModel   model;
+    private BuchungszeilenTableModel model;
     private List<Buchungszeile> modelIndex;
 
     JButton saveButton, bankDatenEinlesenButton, viewRefreshButton, resetFilterButton, auswertungsButton;
@@ -105,7 +106,12 @@ public class MoneyView extends JFrame {
     public JPanel createTablePanel() {
         JPanel tablePanel = new JPanel();
         tablePanel.setLayout( new java.awt.BorderLayout());
-        model = new BuchungssaetzeTableModel();
+
+        model = new BuchungszeilenTableModel(Fachwerte.getAlleFachwerte());
+
+
+
+
         JScrollPane comp = new JScrollPane(createTable(model));
 //        comp.setBorder(new TitledBorder("Liste der Umsätze"));
         tablePanel.add(comp);
@@ -118,7 +124,14 @@ public class MoneyView extends JFrame {
         return tablePanel;
     }
 
-    private JTable createTable(DefaultTableModel model) {
+    private JPanel createTable(BuchungszeilenTableModel model) {
+
+        return new ATableForm(model);
+
+/*
+        frame.getContentPane().add(comp);
+
+
 
         model.addColumn("Hauptbuchung");
         model.addColumn("Umbuchung");
@@ -134,7 +147,7 @@ public class MoneyView extends JFrame {
         model.addColumn("P-Saldo");
         model.addColumn("Kommentar");
 
-        final DatumsCellrenderer datumsCellrenderer = new DatumsCellrenderer();
+        final ADatumCellrenderer ADatumCellrenderer = new ADatumCellrenderer();
         final Integer2FloatCellRenderer integerCellRenderer = new Integer2FloatCellRenderer();
 
         final JTable table = new JTable(model) {
@@ -145,7 +158,7 @@ public class MoneyView extends JFrame {
 
             public TableCellRenderer getCellRenderer(int row, int column) {
                 if (column == 2) {
-                    return datumsCellrenderer;
+                    return ADatumCellrenderer;
                 } else if (column == 6 || column == 8 || column == 0 || column == 1) {
 
                     return new DefaultTableCellRenderer() {
@@ -234,6 +247,7 @@ public class MoneyView extends JFrame {
         table.setVisible(true);
 
         return table;
+        */
     }
 
     private JPanel createSummaryPanel() {
@@ -548,8 +562,9 @@ public class MoneyView extends JFrame {
         MoneyTransient moneyTr = moneyController.getMoneyTr();
         List<Buchungszeile> aktuelleDaten = moneyTr.getAktuelleDaten();
 
-        model.setRowCount(0);
-
+        model.getDataVector().clear();
+        model.getDataVector().addAll(aktuelleDaten);
+/*
         String erstesDatum              = "00000000";
         String letztesDatum             = "00000000";
         String erstesDatumSelected      = "00000000";
@@ -586,23 +601,23 @@ public class MoneyView extends JFrame {
             }
 
 
-            Object[] rowData = new Object[13];
+//            Object[] rowData = new Object[13];
+//
+//            rowData[0] = buchungszeile.hauptbuchungsNr;
+//            rowData[1] = buchungszeile.umbuchungNr;
+//            rowData[2] = buchungszeile.datum;
+//            rowData[3] = buchungszeile.quelleZiel;
+//            rowData[4] = buchungszeile.buchungstext;
+//            rowData[5] = buchungszeile.verwendungszweck;
+//            rowData[6] = buchungszeile.kategorie;
+//            rowData[7] = buchungszeile.betrag;
+//            rowData[8] = buchungszeile.waehrung;
+//            rowData[9] = buchungszeile.saldo;
+//            rowData[10] = buchungszeile.pbetrag;
+//            rowData[11] = buchungszeile.pSaldo;
+//            rowData[12] = buchungszeile.kommentar;
 
-            rowData[0] = buchungszeile.hauptbuchungsNr;
-            rowData[1] = buchungszeile.umbuchungNr;
-            rowData[2] = buchungszeile.datum;
-            rowData[3] = buchungszeile.quelleZiel;
-            rowData[4] = buchungszeile.buchungstext;
-            rowData[5] = buchungszeile.verwendungszweck;
-            rowData[6] = buchungszeile.kategorie;
-            rowData[7] = buchungszeile.betrag;
-            rowData[8] = buchungszeile.waehrung;
-            rowData[9] = buchungszeile.saldo;
-            rowData[10] = buchungszeile.pbetrag;
-            rowData[11] = buchungszeile.pSaldo;
-            rowData[12] = buchungszeile.kommentar;
-
-            model.addRow(rowData);
+            model.addRow();
             modelIndex.add(buchungszeile);
 
             if (erstesDatumSelected == "00000000") {
@@ -630,7 +645,7 @@ public class MoneyView extends JFrame {
 
         statusZeile.setText("Total " + aktuelleDaten.size() + " Buchungssätze von " + erstesDatum + " - " + letztesDatum + "  " + countHauptbuchungen + "/" + countUmbuchungen
         + "  |  selektierte Buchungssätze von " + erstesDatumSelected + " - " + letztesDatumSelected + "  " + countHauptbuchungenSelected + "/" + countUmbuchungenSelectected);
-
+*/
         addMessage(moneyController.getMessage());
     }
 }

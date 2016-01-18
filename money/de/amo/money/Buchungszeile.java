@@ -1,6 +1,7 @@
 package de.amo.money;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
@@ -114,6 +115,50 @@ public class Buchungszeile implements Cloneable {
         }
 
         return b;
+    }
+
+    private int fromDouble(double d) {
+        BigDecimal bd = new BigDecimal(d);
+        bd = bd.movePointRight(2);
+        return bd.intValue();
+    }
+
+    private double fromInt(int i) {
+        BigDecimal bd = new BigDecimal(i);
+        bd = bd.movePointLeft(2);
+        return bd.doubleValue();
+    }
+
+    public double getBetragAsDouble() {
+        return fromInt(betrag);
+    }
+
+    public void setBetrag(double betrag) {
+        this.betrag = fromDouble(betrag);
+    }
+
+    public double getSaldoAsDouble() {
+        return fromInt(saldo);
+    }
+
+    public void setSaldo(double saldo) {
+        this.saldo = fromDouble(saldo);
+    }
+
+    public double getPBetrag() {
+        return fromInt(pbetrag);
+    }
+
+    public void setPBetrag(double pbetrag) {
+        this.pbetrag = fromDouble(pbetrag);
+    }
+
+    public double getPSaldoAsDouble() {
+        return fromInt(pSaldo);
+    }
+
+    public void setPSaldo(double pSaldo) {
+        this.pSaldo = fromDouble(pSaldo);
     }
 
     public static Buchungszeile fromIngDibaZeile(String zeile) {
