@@ -1,0 +1,64 @@
+package de.amo.view;
+
+import de.amo.tools.StringFormatter;
+
+import javax.swing.*;
+import javax.swing.text.NumberFormatter;
+import java.awt.*;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
+/**
+ * Created by private on 30.08.2015.
+ */
+public class NumberEditField extends EditField {
+
+
+    public NumberEditField(String fuehrungstext, BigDecimal defaultValue, int inputwidth) {
+        super(fuehrungstext,defaultValue, inputwidth);
+    }
+
+    public NumberEditField(String fuehrungstext, BigDecimal defaultValue, int inputwidth, int leftgap, int rightgap, int topgap, int bottomgap) {
+        super(fuehrungstext, defaultValue, inputwidth, leftgap, rightgap, topgap, bottomgap);
+    }
+
+
+    @Override
+    protected JTextField createInputField(Object defaultText) {
+
+        BigDecimal bigDecimal = (BigDecimal) defaultText;
+        int scale = bigDecimal.scale();
+
+        DecimalFormat format = new DecimalFormat();
+        format.applyLocalizedPattern("#.###,##");
+        format.setGroupingUsed(true);
+        format.setMinimumFractionDigits(scale);
+        format.setMaximumFractionDigits(scale);
+        format.setDecimalSeparatorAlwaysShown(true);
+
+        NumberFormatter formatter = new NumberFormatter(format);
+        formatter.setAllowsInvalid(false);
+        JFormattedTextField field = new JFormattedTextField(formatter);
+        field.setValue(defaultText);
+        field.setHorizontalAlignment(JTextField.RIGHT);
+
+        return field;
+    }
+
+    public void setValue(BigDecimal bd) {
+        ((JFormattedTextField )inputField).setValue(bd);
+    }
+
+    public BigDecimal getBigDezValue() {
+        String input = getInputString();
+        BigDecimal bigDecimal = new BigDecimal(input);
+        return bigDecimal;
+    }
+
+    public int getIntValue() {
+        String input = getInputString();
+        BigDecimal bigDecimal = new BigDecimal(input).movePointRight(2);
+        return bigDecimal.intValue();
+    }
+}
