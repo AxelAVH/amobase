@@ -14,19 +14,23 @@ import java.text.ParseException;
 /**
  * Created by private on 18.01.2016.
  */
-public class AInteger2FloatCellEditor extends DefaultCellEditor {
+public class AIntegerCellEditor extends DefaultCellEditor {
 
     JFormattedTextField ftf;
     NumberFormat integerFormat;
     private Integer minimum, maximum;
     private boolean DEBUG = false;
 
-    public AInteger2FloatCellEditor(int min, int max) {
+//    public AIntegerCellEditor(int min, int max) {
+//
+//    }
+
+    public AIntegerCellEditor() {
 
         super(new JFormattedTextField());
         ftf = (JFormattedTextField) getComponent();
-        minimum = new Integer(min);
-        maximum = new Integer(max);
+        minimum = new Integer(Integer.MIN_VALUE);
+        maximum = new Integer(Integer.MAX_VALUE);
 
         //Set up the editor for the integer cells.
         integerFormat = NumberFormat.getIntegerInstance();

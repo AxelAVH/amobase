@@ -4,7 +4,8 @@ package de.amo.view.table;
  * Created by private on 17.01.2016.
  */
 
-import de.amo.view.cellrenderer.AInteger2FloatCellEditor;
+import de.amo.view.cellrenderer.ADoubleCellEditor;
+import de.amo.view.cellrenderer.AIntegerCellEditor;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -41,20 +42,26 @@ public class ATableForm extends JPanel {
         table.setPreferredScrollableViewportSize(new java.awt.Dimension(500, 300));
 
         for (int column = 0; column < tableModel.getColumnCount(); column++) {
-            TableCellRenderer tableCellRenderer = tableModel.getTableCellRenderer(column);
+
             TableColumn tableColumn = table.getColumnModel().getColumn(column);
-            tableColumn.setCellRenderer(tableCellRenderer);
+
+            tableColumn.setCellRenderer(tableModel.getTableCellRenderer(column));
+            tableColumn.setCellEditor(tableModel.getTableCellEditor(column));
 
             if (tableModel.getHiddenIndex() == column) {
                 tableColumn.setMinWidth(2);
                 tableColumn.setPreferredWidth(2);
                 tableColumn.setMaxWidth(2);
                 tableColumn.setCellRenderer(new InteractiveRenderer(tableModel.getHiddenIndex()));
+            } else {
+                tableColumn.setMinWidth(tableModel.getMinWidth(column));
+                tableColumn.setMaxWidth(tableModel.getMaxWidth(column));
+                tableColumn.setPreferredWidth(tableModel.getPreferredWidth(column));
             }
 
-            if (column ==4) {
-                tableColumn.setCellEditor(new AInteger2FloatCellEditor(0,100));
-            }
+//            if (column ==4) {
+//                tableColumn.setCellEditor(new ADoubleCellEditor(0,10000));
+//            }
         }
 
         setLayout(new BorderLayout());
@@ -126,32 +133,4 @@ public class ATableForm extends JPanel {
     }
 
 
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-            JFrame frame = new JFrame("Interactive Form");
-            frame.addWindowListener(new WindowAdapter() {
-                public void windowClosing(WindowEvent evt) {
-                    System.exit(0);
-                }
-            });
-            AudioRecordTableModel aTableModel = new AudioRecordTableModel();
-
-            ATableButton saveButton = new ATableButton(){
-                @Override
-                public void execute() {
-                    System.out.println("Hallo, hier wird gesaved !!!!!!!!!!!!!!");
-                }
-            };
-            aTableModel.addButton(saveButton);
-            saveButton.setText("Save");
-
-            ATableForm comp = new ATableForm(aTableModel);
-            frame.getContentPane().add(comp);
-            frame.pack();
-            frame.setVisible(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

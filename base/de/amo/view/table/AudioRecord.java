@@ -8,7 +8,8 @@ public class AudioRecord {
     protected String artist;
     protected String album;
     protected String datum;
-    protected Integer preis;
+    protected Double preis;
+    protected Integer preisInCent;
 
     public AudioRecord() {
         title = "";
@@ -48,11 +49,19 @@ public class AudioRecord {
         this.datum = datum;
     }
 
-    public Integer getPreis() {
+    public Double getPreis() {
         return preis;
     }
 
-    public void setPreis(Integer preis) {
+    public void setPreis(Double preis) {
         this.preis = preis;
+    }
+
+    public Integer getPreisInCent() {
+        return preisInCent;
+    }
+
+    public void setPreisInCent(Integer preisInCent) {
+        this.preisInCent = preisInCent;
     }
 }

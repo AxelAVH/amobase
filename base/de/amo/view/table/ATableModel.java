@@ -1,8 +1,8 @@
 package de.amo.view.table;
 
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
+import de.amo.view.fachwerte.Fachwert;
+
+import javax.swing.table.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,30 +13,49 @@ import java.util.Vector;
  * <p/>
  * geklaut bei http://www.javalobby.org/articles/jtable/?source=archives
  */
-public abstract class ATableModel extends AbstractTableModel {
+public abstract class ATableModel extends DefaultTableModel {
 
     private int hiddenIndex;
 
     protected String[] columnNames;
-    protected Vector dataVector;
+    protected String[] attributNames;
+    protected TableCellRenderer[] cellRenderers;
+    protected TableCellEditor[] tableCellEditors;
+    protected Class[] columnClasses;
 
     List<ATableButton> buttons;
     MyActionListener actionListener;
 
-    /**
-     * An die vom Auftraggeber definierten Spalten wir noch eine Hidden-Spalte angefügt
-     *
-     * @param aktColumnNames
-     */
-    public ATableModel(String[] aktColumnNames) {
-        this.columnNames = new String[aktColumnNames.length + 1];
-        for (int i = 0; i < aktColumnNames.length; i++) {
-            columnNames[i] = aktColumnNames[i];
+    int[] minWidth;
+    int[] preferredWidth;
+    int[] maxWidth;
+
+    public ATableModel(List<Fachwert> fachwerte) {
+
+        this.columnNames        = new String[fachwerte.size() + 1];
+        this.attributNames      = new String[fachwerte.size() + 1];
+        this.cellRenderers      = new TableCellRenderer[fachwerte.size() + 1];
+        this.tableCellEditors   = new TableCellEditor[fachwerte.size() + 1];
+        this.columnClasses      = new Class[fachwerte.size() + 1];
+        this.minWidth           = new int[fachwerte.size() + 1];
+        this.preferredWidth     = new int[fachwerte.size() + 1];
+        this.maxWidth           = new int[fachwerte.size() + 1];
+
+        for (int i = 0; i < fachwerte.size(); i++) {
+            Fachwert fachwert   = fachwerte.get(i);
+            attributNames[i]    = fachwert.getAttributName();
+            columnNames[i]      = fachwert.getColumName();
+            cellRenderers[i]    = fachwert.getTableCellRenderer();
+            tableCellEditors[i] = fachwert.getTableCellEditor();
+            columnClasses[i]    = fachwert.getColumnClass();
+            minWidth[i]         = fachwert.getMinWidth();
+            maxWidth[i]         = fachwert.getMaxWidth();
+            preferredWidth[i]   = fachwert.getPreferredWidth();
         }
-        hiddenIndex = aktColumnNames.length;
+
+        hiddenIndex = fachwerte.size();
         columnNames[hiddenIndex] = "hidden";
 
-        dataVector = new Vector();
     }
 
     public void addButton(ATableButton button) {
@@ -66,15 +85,15 @@ public abstract class ATableModel extends AbstractTableModel {
 
     public Class getColumnClass(int column) {
         if (column == hiddenIndex) return Object.class;
+        // ToDo: Checken, ob nicht präziser besser wäre
         return String.class;
     }
 
-    public abstract Object getValueAt(Object record, int column);
+    public abstract Object getValueAt(Object record, String attributname);
 
-    public Object getValueAt(int row, int column) {
+    public Object getValueAt(int row, int colum) {
         Object record = dataVector.get(row);
-        Object ret = getValueAt(record, column);
-
+        Object ret = getValueAt(record, attributNames[colum]);
 
         /*if (ret == null) {
             ret = new Object();
@@ -83,20 +102,16 @@ public abstract class ATableModel extends AbstractTableModel {
         return ret;
     }
 
-    public abstract void setValueAt(Object value, Object record, int colums);
+    public abstract void setValueAt(Object value, Object record, String attributName);
 
-    public void setValueAt(Object value, int row, int column) {
+    public void setValueAt(Object value, int row, int colum) {
         Object record = dataVector.get(row);
-        setValueAt(value, record, column);
-        fireTableCellUpdated(row, column);
-    }
-
-    public int getRowCount() {
-        return dataVector.size();
+        setValueAt(value, record, attributNames[colum]);
+        fireTableCellUpdated(row, colum);
     }
 
     public int getColumnCount() {
-        return columnNames.length;
+        return attributNames.length;
     }
 
     public abstract boolean isRecordEmpty(Object record);
@@ -116,7 +131,29 @@ public abstract class ATableModel extends AbstractTableModel {
     }
 
     public TableCellRenderer getTableCellRenderer(int column) {
+        if (cellRenderers != null) {
+            return cellRenderers[column];
+        }
         return new DefaultTableCellRenderer();
+    }
+
+    public TableCellEditor getTableCellEditor(int column) {
+        if (tableCellEditors != null) {
+            return tableCellEditors[column];
+        }
+        return null;
+    }
+
+    public int getMinWidth(int column) {
+        return minWidth[column];
+    }
+
+    public int getPreferredWidth(int column) {
+        return preferredWidth[column];
+    }
+
+    public int getMaxWidth(int column) {
+        return maxWidth[column];
     }
 
     public List<ATableButton> getButtons() {

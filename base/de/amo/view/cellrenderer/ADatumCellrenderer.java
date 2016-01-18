@@ -8,9 +8,9 @@ import java.awt.*;
 /**
  * Created by private on 06.09.2015.
  */
-public class DatumsCellrenderer extends DefaultTableCellRenderer {
+public class ADatumCellrenderer extends DefaultTableCellRenderer {
 
-    public DatumsCellrenderer() {
+    public ADatumCellrenderer() {
         super();
     }
 
