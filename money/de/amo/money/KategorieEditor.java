@@ -70,17 +70,20 @@ public class KategorieEditor {
 
                 try {
                     Kategoriefacade.get().saveKategorien();
+                    Kategoriefacade.get().loadKategorien();
+                    tableModel.getDataVector().clear();
+                    tableModel.getDataVector().addAll(Kategoriefacade.get().getKategorien());
                 } catch (BackingStoreException e) {
                     e.printStackTrace();
                 }
-                kategorienTable.repaint();
+                tableModel.fireTableDataChanged();
             }
 
             if (actionEvent.getSource() == abortButton) {
                 moneyView.addMessage("Abbrechen Event erhalten");
                 tableModel.getDataVector().clear();
                 tableModel.getDataVector().addAll(Kategoriefacade.get().getKategorien());
-                kategorienTable.repaint();
+                tableModel.fireTableDataChanged();
             }
         }
     }
