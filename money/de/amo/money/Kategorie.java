@@ -50,9 +50,9 @@ public class Kategorie {
 
         fw.setColumName("Code");
 
-        fw.setPreferredWidth(100);
+        fw.setPreferredWidth(80);
         fw.setMinWidth(50);
-        fw.setMaxWidth(150);
+        fw.setMaxWidth(120);
 
         DefaultTableCellRenderer tableCellRenderer = new DefaultTableCellRenderer() {
             @Override
@@ -72,7 +72,7 @@ public class Kategorie {
         fw.setColumName("Beschreibung");
         fw.setPreferredWidth(400);
         fw.setMinWidth(200);
-        fw.setMaxWidth(800);
+        fw.setMaxWidth(1800);
 
         return fw;
     }
