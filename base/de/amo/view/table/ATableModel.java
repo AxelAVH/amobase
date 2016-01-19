@@ -93,14 +93,14 @@ public abstract class ATableModel extends AbstractTableModel {
     }
 
     public Class getColumnClass(int column) {
+        // ToDo: Object wird von Oracle wegen Performance-Verschlechterungen NICHT empfohlen, klären, ob String o.ä. hier auch genügt.
         if (column == hiddenIndex) return Object.class;
-        // ToDo: Checken, ob nicht präziser besser wäre
-        return String.class;
+        return columnClasses[column];
     }
 
-    public abstract Object getValueAt(Object record, String attributname);
+    public abstract Object getValueAt(Object record, String attributName);
 
-    public Object getValueAt(int row, int colum) {
+    public Object getValueAt(int row, int column) {
         /*
         row: 0 column: -1
     Exception in thread "AWT-EventQueue-0" java.lang.ArrayIndexOutOfBoundsException: Array index out of range: 0
@@ -110,25 +110,21 @@ public abstract class ATableModel extends AbstractTableModel {
 	at javax.swing.JTable.prepareRenderer(JTable.java:5719)
 	at javax.swing.plaf.basic.BasicTableUI.paintCell(BasicTableUI.java:2114)
          */
-        if(colum == -1) {
+        if(column == -1) {
             return null;
         }
         Object record = dataVector.get(row);
-        Object ret = getValueAt(record, attributNames[colum]);
+        Object ret = getValueAt(record, attributNames[column]);
 
-        /*if (ret == null) {
-            ret = new Object();
-        }
-        */
         return ret;
     }
 
     public abstract void setValueAt(Object value, Object record, String attributName);
 
-    public void setValueAt(Object value, int row, int colum) {
+    public void setValueAt(Object value, int row, int column) {
         Object record = dataVector.get(row);
-        setValueAt(value, record, attributNames[colum]);
-        fireTableCellUpdated(row, colum);
+        setValueAt(value, record, attributNames[column]);
+        fireTableCellUpdated(row, column);
     }
 
     public int getRowCount() {
