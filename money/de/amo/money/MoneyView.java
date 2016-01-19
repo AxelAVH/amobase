@@ -82,7 +82,10 @@ public class MoneyView extends JFrame {
 
         mainPanel.add(createSummaryPanel());
 
-        mainPanel.add(createTablePanel());
+        model = new BuchungszeilenTableModel(Fachwerte.getAlleFachwerte());
+        model.setEditable(false);
+
+        mainPanel.add(createTablePanel(model));
 
         mainPanel.add(createSouthPanel());
 
@@ -103,80 +106,23 @@ public class MoneyView extends JFrame {
 
     }
 
-    public JPanel createTablePanel() {
-        JPanel tablePanel = new JPanel();
-        tablePanel.setLayout( new java.awt.BorderLayout());
+    public JPanel createTablePanel(BuchungszeilenTableModel model) {
 
-        model = new BuchungszeilenTableModel(Fachwerte.getAlleFachwerte());
-
-
-
-
-        JScrollPane comp = new JScrollPane(createTable(model));
-//        comp.setBorder(new TitledBorder("Liste der Umsätze"));
-        tablePanel.add(comp);
-        tablePanel.setBorder(new TitledBorder("Liste der Umsätze"));
+        ATableForm tablePane = createTable(model);
+        tablePane.setBorder(new TitledBorder("Liste der Umsätze"));
 
         statusZeile = new JLabel();
         statusZeile.setText("Keine Datenbank geladen");
-        tablePanel.add(statusZeile, java.awt.BorderLayout.PAGE_END);
+        tablePane.setStatusLabel(statusZeile);
 
-        return tablePanel;
+        return tablePane;
     }
 
-    private JPanel createTable(BuchungszeilenTableModel model) {
+    private ATableForm createTable(BuchungszeilenTableModel model) {
 
-        return new ATableForm(model);
+        ATableForm tableForm = new ATableForm(model);
 
-/*
-        frame.getContentPane().add(comp);
-
-
-
-        model.addColumn("Hauptbuchung");
-        model.addColumn("Umbuchung");
-        model.addColumn("Datum");
-        model.addColumn("Quelle/Ziel");
-        model.addColumn("Buchungstext");
-        model.addColumn("Verwendungszweck");
-        model.addColumn("Kategorie");
-        model.addColumn("Betrag");
-        model.addColumn("Währung");
-        model.addColumn("Saldo");
-        model.addColumn("P-Betrag");
-        model.addColumn("P-Saldo");
-        model.addColumn("Kommentar");
-
-        final ADatumCellrenderer ADatumCellrenderer = new ADatumCellrenderer();
-        final Integer2FloatCellRenderer integerCellRenderer = new Integer2FloatCellRenderer();
-
-        final JTable table = new JTable(model) {
-
-            public boolean isCellEditable(int x, int y) {
-                return false;
-            }
-
-            public TableCellRenderer getCellRenderer(int row, int column) {
-                if (column == 2) {
-                    return ADatumCellrenderer;
-                } else if (column == 6 || column == 8 || column == 0 || column == 1) {
-
-                    return new DefaultTableCellRenderer() {
-                        @Override
-                        public int getHorizontalAlignment() {
-                            return SwingConstants.CENTER;
-                        }
-                    };
-
-                }
-                if (getModel().getColumnClass(column).equals(Integer.class)) {
-                    return integerCellRenderer;
-                }
-                // else...
-                return super.getCellRenderer(row, column);
-            }
-        };
-
+        final JTable table = tableForm.getTable();
 
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -244,10 +190,8 @@ public class MoneyView extends JFrame {
             // der wirkt wirklich
             table.setBackground(Color.cyan);
         }
-        table.setVisible(true);
 
-        return table;
-        */
+        return tableForm;
     }
 
     private JPanel createSummaryPanel() {
@@ -563,8 +507,7 @@ public class MoneyView extends JFrame {
         List<Buchungszeile> aktuelleDaten = moneyTr.getAktuelleDaten();
 
         model.getDataVector().clear();
-        model.getDataVector().addAll(aktuelleDaten);
-/*
+
         String erstesDatum              = "00000000";
         String letztesDatum             = "00000000";
         String erstesDatumSelected      = "00000000";
@@ -601,23 +544,7 @@ public class MoneyView extends JFrame {
             }
 
 
-//            Object[] rowData = new Object[13];
-//
-//            rowData[0] = buchungszeile.hauptbuchungsNr;
-//            rowData[1] = buchungszeile.umbuchungNr;
-//            rowData[2] = buchungszeile.datum;
-//            rowData[3] = buchungszeile.quelleZiel;
-//            rowData[4] = buchungszeile.buchungstext;
-//            rowData[5] = buchungszeile.verwendungszweck;
-//            rowData[6] = buchungszeile.kategorie;
-//            rowData[7] = buchungszeile.betrag;
-//            rowData[8] = buchungszeile.waehrung;
-//            rowData[9] = buchungszeile.saldo;
-//            rowData[10] = buchungszeile.pbetrag;
-//            rowData[11] = buchungszeile.pSaldo;
-//            rowData[12] = buchungszeile.kommentar;
-
-            model.addRow();
+            model.getDataVector().add(buchungszeile);
             modelIndex.add(buchungszeile);
 
             if (erstesDatumSelected == "00000000") {
@@ -625,6 +552,7 @@ public class MoneyView extends JFrame {
             }
             letztesDatumSelected = buchungszeile.datum;
         }
+
         String monatsAbgrenzDatum = moneyTr.getMonatsAbgrenzDatum();
         String datum  = monatsAbgrenzDatum.substring(6,8) + "." + monatsAbgrenzDatum.substring(4,6) + "." + monatsAbgrenzDatum.substring(0,4);
         zahlungAmPane.getLeadingLabel().setText("Zahlung am " + datum);
@@ -637,15 +565,17 @@ public class MoneyView extends JFrame {
         datenbankNameInput          .setValue(moneyController.getMoneyDatabase().getKontodir());
         summaryLabelDatenbankSaved  .setValue(moneyTr.isSaved() ? "Ja" : "Nein");
 
-        erstesDatum = erstesDatum.substring(6, 8) + "." + erstesDatum.substring(4, 6) + "." + erstesDatum.substring(0, 4);
-        letztesDatum = letztesDatum.substring(6, 8) + "." + letztesDatum.substring(4, 6) + "." + letztesDatum.substring(0, 4);
-        erstesDatumSelected = erstesDatumSelected.substring(6, 8) + "." + erstesDatumSelected.substring(4, 6) + "." + erstesDatumSelected.substring(0, 4);
-        letztesDatumSelected = letztesDatumSelected.substring(6, 8) + "." + letztesDatumSelected.substring(4, 6) + "." + letztesDatumSelected.substring(0, 4);
+        erstesDatum             = erstesDatum.substring(6, 8) + "." + erstesDatum.substring(4, 6) + "." + erstesDatum.substring(0, 4);
+        letztesDatum            = letztesDatum.substring(6, 8) + "." + letztesDatum.substring(4, 6) + "." + letztesDatum.substring(0, 4);
+        erstesDatumSelected     = erstesDatumSelected.substring(6, 8) + "." + erstesDatumSelected.substring(4, 6) + "." + erstesDatumSelected.substring(0, 4);
+        letztesDatumSelected    = letztesDatumSelected.substring(6, 8) + "." + letztesDatumSelected.substring(4, 6) + "." + letztesDatumSelected.substring(0, 4);
 
 
         statusZeile.setText("Total " + aktuelleDaten.size() + " Buchungssätze von " + erstesDatum + " - " + letztesDatum + "  " + countHauptbuchungen + "/" + countUmbuchungen
         + "  |  selektierte Buchungssätze von " + erstesDatumSelected + " - " + letztesDatumSelected + "  " + countHauptbuchungenSelected + "/" + countUmbuchungenSelectected);
-*/
+
+
+
         addMessage(moneyController.getMessage());
     }
 }

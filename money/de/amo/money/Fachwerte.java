@@ -1,7 +1,11 @@
 package de.amo.money;
 
+import de.amo.view.cellrenderer.AIntegerCellRenderer;
 import de.amo.view.fachwerte.*;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +57,14 @@ public class Fachwerte {
         fw.setMaxWidth(100);
         fw.setLabel30("HauptbuchungsNr.");
 
+        AIntegerCellRenderer tableCellRenderer = new AIntegerCellRenderer() {
+            @Override
+            public int getHorizontalAlignment() {
+                return SwingConstants.CENTER;
+            }
+        };
+        fw.setTableCellRenderer(tableCellRenderer);
+
         return fw;
     }
 
@@ -65,6 +77,14 @@ public class Fachwerte {
         fw.setMinWidth(30);
         fw.setMaxWidth(100);
         fw.setLabel30("UmbuchungsNr.");
+
+        AIntegerCellRenderer tableCellRenderer = new AIntegerCellRenderer() {
+            @Override
+            public int getHorizontalAlignment() {
+                return SwingConstants.CENTER;
+            }
+        };
+        fw.setTableCellRenderer(tableCellRenderer);
 
         return fw;
     }
@@ -131,6 +151,14 @@ public class Fachwerte {
         fw.setMaxWidth(100);
         fw.setLabel30("Kategorie");
 
+        DefaultTableCellRenderer tableCellRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public int getHorizontalAlignment() {
+                return SwingConstants.CENTER;
+            }
+        };
+        fw.setTableCellRenderer(tableCellRenderer);
+
         return fw;
     }
 
@@ -143,6 +171,14 @@ public class Fachwerte {
         fw.setMinWidth(30);
         fw.setMaxWidth(100);
         fw.setLabel30("Waehrung");
+
+        DefaultTableCellRenderer tableCellRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public int getHorizontalAlignment() {
+                return SwingConstants.CENTER;
+            }
+        };
+        fw.setTableCellRenderer(tableCellRenderer);
 
         return fw;
     }
