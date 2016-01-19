@@ -2,15 +2,11 @@ package de.amo.money;
 
 import de.amo.tools.ConditionChecker;
 import de.amo.view.*;
-import de.amo.view.cellrenderer.ADatumCellrenderer;
-import de.amo.view.cellrenderer.Integer2FloatCellRenderer;
 import de.amo.view.table.ATableForm;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -97,7 +93,6 @@ public class MoneyView extends JFrame {
         tabbedPane.add("Nachrichten", createMessagePanel());
 
         tabbedPane.add("Kategorien", new KategorieEditor().createEditorPanel(this));
-        //setContentPane(mainPanel);
         setContentPane(tabbedPane);
 //        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -118,7 +113,7 @@ public class MoneyView extends JFrame {
         return tablePane;
     }
 
-    private ATableForm createTable(BuchungszeilenTableModel model) {
+    private ATableForm createTable(final BuchungszeilenTableModel model) {
 
         ATableForm tableForm = new ATableForm(model);
 
@@ -136,7 +131,7 @@ public class MoneyView extends JFrame {
                         Buchungszeile[] buchungszeiles = new Buchungszeile[selectedRows.length];
                         for (int i = 0; i < selectedRows.length; i++) {
                             int selectedRow = selectedRows[i];
-                            buchungszeiles[i] = modelIndex.get(selectedRow);
+                            buchungszeiles[i] = (Buchungszeile) model.getData(selectedRow);
 
                         }
                         BuchungszeilenEditor editor = new BuchungszeilenEditor(moneyController, buchungszeiles, false);
@@ -165,7 +160,7 @@ public class MoneyView extends JFrame {
                     Buchungszeile[] buchungszeiles = new Buchungszeile[selectedRows.length];
                     for (int i = 0; i < selectedRows.length; i++) {
                         int selectedRow = selectedRows[i];
-                        buchungszeiles[i] = modelIndex.get(selectedRow);
+                        buchungszeiles[i] = (Buchungszeile) model.getData(selectedRow);
 
                     }
                     BuchungszeilenEditor editor = new BuchungszeilenEditor(moneyController, buchungszeiles, true);
