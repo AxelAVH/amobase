@@ -101,6 +101,18 @@ public abstract class ATableModel extends AbstractTableModel {
     public abstract Object getValueAt(Object record, String attributname);
 
     public Object getValueAt(int row, int colum) {
+        /*
+        row: 0 column: -1
+    Exception in thread "AWT-EventQueue-0" java.lang.ArrayIndexOutOfBoundsException: Array index out of range: 0
+	at java.util.Vector.get(Vector.java:744)
+	at de.amo.view.table.ATableModel.getValueAt(ATableModel.java:104)
+	at javax.swing.JTable.getValueAt(JTable.java:2717)
+	at javax.swing.JTable.prepareRenderer(JTable.java:5719)
+	at javax.swing.plaf.basic.BasicTableUI.paintCell(BasicTableUI.java:2114)
+         */
+        if(colum == -1) {
+            return null;
+        }
         Object record = dataVector.get(row);
         Object ret = getValueAt(record, attributNames[colum]);
 
