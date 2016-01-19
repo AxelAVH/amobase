@@ -8,13 +8,12 @@ import javax.swing.table.TableCellRenderer;
  */
 public abstract class Fachwert {
 
-    String attributName;
+    String              attributName;
+    Class               columnClass;
+    TableCellRenderer   tableCellRenderer;
+    TableCellEditor     tableCellEditor;
+
     String columName;
-//    Class  columnClass;
-//    TableCellRenderer tableCellRenderer;
-//    TableCellEditor tableCellEditor;
-
-
     String label30;
     String label40;
     String label50;
@@ -45,13 +44,13 @@ public abstract class Fachwert {
 //        this.columnClass = columnClass;
 //    }
 
-//    public void setTableCellRenderer(TableCellRenderer tableCellRenderer) {
-//        this.tableCellRenderer = tableCellRenderer;
-//    }
+    public void setTableCellRenderer(TableCellRenderer tableCellRenderer) {
+        this.tableCellRenderer = tableCellRenderer;
+    }
 
-//    public void setTableCellEditor(TableCellEditor tableCellEditor) {
-//        this.tableCellEditor = tableCellEditor;
-//    }
+    public void setTableCellEditor(TableCellEditor tableCellEditor) {
+        this.tableCellEditor = tableCellEditor;
+    }
 
     public void setLabel30(String label30) {
         this.label30 = label30;
@@ -121,11 +120,17 @@ public abstract class Fachwert {
         return getAttributName();
     }
 
-    public abstract Class getColumnClass();
+    public Class getColumnClass() {
+        return columnClass;
+    }
 
-    public abstract TableCellRenderer getTableCellRenderer();
+    public TableCellRenderer getTableCellRenderer() {
+        return tableCellRenderer;
+    }
 
-    public abstract TableCellEditor getTableCellEditor();
+    public TableCellEditor getTableCellEditor() {
+        return tableCellEditor;
+    }
 
     public int getMinWidth() {
         if (minWidth < 0) {

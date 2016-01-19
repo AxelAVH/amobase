@@ -13,21 +13,9 @@ public class FachwertInteger extends Fachwert {
 
     public FachwertInteger(String attributName) {
         super(attributName);
-
+        tableCellEditor = new AIntegerCellEditor();
+        tableCellRenderer = new AIntegerCellRenderer();
+        columnClass = Integer.class;
     }
 
-    @Override
-    public Class getColumnClass() {
-        return Integer.class;
-    }
-
-    @Override
-    public TableCellRenderer getTableCellRenderer() {
-        return new AIntegerCellRenderer();
-    }
-
-    @Override
-    public TableCellEditor getTableCellEditor() {
-        return new AIntegerCellEditor();
-    }
 }

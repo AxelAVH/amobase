@@ -20,12 +20,22 @@ import java.awt.event.WindowEvent;
 public class ATableForm extends JPanel {
 
     protected JTable table;
+    private JPanel statusPanel;
     protected JScrollPane scroller;
     protected ATableModel tableModel;
 
     public ATableForm(ATableModel aTableModel) {
         tableModel = aTableModel;
         initComponent();
+    }
+
+    public JTable getTable() {
+        return table;
+    }
+
+    public void setStatusLabel(JLabel statusLabel) {
+        statusPanel.add(statusLabel);
+        statusPanel.setVisible(true);
     }
 
     public void initComponent() {
@@ -46,6 +56,7 @@ public class ATableForm extends JPanel {
             TableColumn tableColumn = table.getColumnModel().getColumn(column);
 
             tableColumn.setCellRenderer(tableModel.getTableCellRenderer(column));
+
             tableColumn.setCellEditor(tableModel.getTableCellEditor(column));
 
             if (tableModel.getHiddenIndex() == column) {
@@ -58,28 +69,29 @@ public class ATableForm extends JPanel {
                 tableColumn.setMaxWidth(tableModel.getMaxWidth(column));
                 tableColumn.setPreferredWidth(tableModel.getPreferredWidth(column));
             }
-
-//            if (column ==4) {
-//                tableColumn.setCellEditor(new ADoubleCellEditor(0,10000));
-//            }
         }
 
         setLayout(new BorderLayout());
         add(scroller, BorderLayout.CENTER);
 
-        java.util.List<ATableButton> buttons = tableModel.getButtons();
-        if (buttons != null) {
-            JPanel buttonPanel = new JPanel();
-            //setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        statusPanel = new JPanel();
+        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+        statusPanel.setVisible(false);
+        add(statusPanel, BorderLayout.SOUTH);
 
-            for (ATableButton button : buttons) {
-                JPanel bP = new JPanel();
-                bP.add(button);
-                buttonPanel.add(bP);
-            }
-
-            add(buttonPanel, BorderLayout.SOUTH);
-        }
+//        java.util.List<ATableButton> buttons = tableModel.getButtons();
+//        if (buttons != null) {
+//            JPanel buttonPanel = new JPanel();
+//            //setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+//
+//            for (ATableButton button : buttons) {
+//                JPanel bP = new JPanel();
+//                bP.add(button);
+//                buttonPanel.add(bP);
+//            }
+//
+//            add(buttonPanel, BorderLayout.SOUTH);
+//        }
     }
 
     public void highlightLastRow(int row) {
@@ -103,13 +115,11 @@ public class ATableForm extends JPanel {
 
         public Component getTableCellRendererComponent(JTable table,
                                                        Object value, boolean isSelected, boolean hasFocus, int row,
-                                                       int column)
-        {
+                                                       int column) {
             Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             if (column == interactiveColumn && hasFocus) {
                 if ((ATableForm.this.tableModel.getRowCount() - 1) == row &&
-                        !ATableForm.this.tableModel.hasEmptyRow())
-                {
+                        !ATableForm.this.tableModel.hasEmptyRow()) {
                     ATableForm.this.tableModel.addEmptyRow();
                 }
 

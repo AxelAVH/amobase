@@ -13,20 +13,9 @@ public class FachwertString extends Fachwert {
 
     public FachwertString(String attributName) {
         super(attributName);
+        tableCellEditor     = new AStringCellEditor();
+        tableCellRenderer   = new DefaultTableCellRenderer();
+        columnClass         = String.class;
     }
 
-    @Override
-    public Class getColumnClass() {
-        return String.class;
-    }
-
-    @Override
-    public TableCellRenderer getTableCellRenderer() {
-        return new DefaultTableCellRenderer();
-    }
-
-    @Override
-    public TableCellEditor getTableCellEditor() {
-        return new AStringCellEditor();
-    }
 }

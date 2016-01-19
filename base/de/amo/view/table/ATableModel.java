@@ -13,7 +13,9 @@ import java.util.Vector;
  * <p/>
  * geklaut bei http://www.javalobby.org/articles/jtable/?source=archives
  */
-public abstract class ATableModel extends DefaultTableModel {
+public abstract class ATableModel extends AbstractTableModel {
+
+    protected  Vector dataVector;
 
     private int hiddenIndex;
 
@@ -29,6 +31,8 @@ public abstract class ATableModel extends DefaultTableModel {
     int[] minWidth;
     int[] preferredWidth;
     int[] maxWidth;
+
+    boolean editable;
 
     public ATableModel(List<Fachwert> fachwerte) {
 
@@ -56,6 +60,11 @@ public abstract class ATableModel extends DefaultTableModel {
         hiddenIndex = fachwerte.size();
         columnNames[hiddenIndex] = "hidden";
 
+        dataVector = new Vector();
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 
     public void addButton(ATableButton button) {
@@ -80,7 +89,7 @@ public abstract class ATableModel extends DefaultTableModel {
 
     public boolean isCellEditable(int row, int column) {
         if (column == hiddenIndex) return false;
-        else return true;
+        else return editable;
     }
 
     public Class getColumnClass(int column) {
@@ -110,6 +119,10 @@ public abstract class ATableModel extends DefaultTableModel {
         fireTableCellUpdated(row, colum);
     }
 
+    public int getRowCount() {
+        return dataVector.size();
+    }
+
     public int getColumnCount() {
         return attributNames.length;
     }
@@ -119,6 +132,10 @@ public abstract class ATableModel extends DefaultTableModel {
     public boolean hasEmptyRow() {
         if (dataVector.size() == 0) return false;
         return isRecordEmpty(dataVector.get(dataVector.size() - 1));
+    }
+
+    public Vector getDataVector() {
+        return dataVector;
     }
 
     public abstract Object createEmptyRecord();

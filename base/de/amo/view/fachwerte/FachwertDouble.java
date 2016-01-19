@@ -12,21 +12,12 @@ import javax.swing.table.TableCellRenderer;
 public class FachwertDouble extends Fachwert {
 
     public FachwertDouble(String attributName) {
+
         super(attributName);
+
+        tableCellRenderer   = new ADoubleCellRenderer();
+        tableCellEditor     = new ADoubleCellEditor();
+        columnClass         = Double.class;
     }
 
-    @Override
-    public Class getColumnClass() {
-        return Double.class;
-    }
-
-    @Override
-    public TableCellRenderer getTableCellRenderer() {
-        return new ADoubleCellRenderer();
-    }
-
-    @Override
-    public TableCellEditor getTableCellEditor() {
-        return new ADoubleCellEditor();
-    }
 }

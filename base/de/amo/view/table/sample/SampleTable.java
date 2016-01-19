@@ -66,6 +66,7 @@ public class SampleTable {
             saveButton.setText("Save");
 
             ATableForm comp = new ATableForm(aTableModel);
+            comp.setStatusLabel(new JLabel("Das ist ein Status"));
             frame.getContentPane().add(comp);
             frame.pack();
             frame.setVisible(true);
