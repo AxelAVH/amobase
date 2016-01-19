@@ -9,7 +9,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,7 +52,6 @@ public class MoneyView extends JFrame {
     private MyActionListener actionListener;
 
     private BuchungszeilenTableModel model;
-    private List<Buchungszeile> modelIndex;
 
     JButton saveButton, bankDatenEinlesenButton, viewRefreshButton, resetFilterButton, auswertungsButton;
 
@@ -94,11 +92,9 @@ public class MoneyView extends JFrame {
 
         tabbedPane.add("Kategorien", new KategorieEditor().createEditorPanel(this));
         setContentPane(tabbedPane);
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         pack();
         setVisible(true);
-
     }
 
     public JPanel createTablePanel(BuchungszeilenTableModel model) {
@@ -137,6 +133,8 @@ public class MoneyView extends JFrame {
                         BuchungszeilenEditor editor = new BuchungszeilenEditor(moneyController, buchungszeiles, false);
                         editor.setVisible(true);
                         updateGui();
+
+                        table.setRowSelectionInterval(row,row);
                     }
                 }
             }
@@ -166,6 +164,7 @@ public class MoneyView extends JFrame {
                     BuchungszeilenEditor editor = new BuchungszeilenEditor(moneyController, buchungszeiles, true);
                     editor.setVisible(true);
                     updateGui();
+                    table.setRowSelectionInterval(row,row);
                 }
             }
 
@@ -409,17 +408,10 @@ public class MoneyView extends JFrame {
     }
 
     private JButton createAuswertungsButton() {
-        auswertungsButton = new JButton("Auswertung in das Nachrichtenfenster");
+        auswertungsButton = new JButton("Auswertung erzeugen");
         auswertungsButton.setVisible(true);
         auswertungsButton.addActionListener(actionListener);
         return auswertungsButton;
-    }
-
-    class BuchungssaetzeTableModel extends DefaultTableModel {
-        public Class getColumnClass(int c) {
-            Class aClass = getValueAt(0, c).getClass();
-            return aClass;
-        }
     }
 
 
@@ -513,8 +505,6 @@ public class MoneyView extends JFrame {
         int countHauptbuchungenSelected = 0;
         int countUmbuchungenSelectected = 0;
 
-        modelIndex = new ArrayList<Buchungszeile>();
-
         for (Buchungszeile buchungszeile : aktuelleDaten) {
 
             if (buchungszeile.isUmbuchung()) {
@@ -540,7 +530,6 @@ public class MoneyView extends JFrame {
 
 
             model.getDataVector().add(buchungszeile);
-            modelIndex.add(buchungszeile);
 
             if (erstesDatumSelected == "00000000") {
                 erstesDatumSelected = buchungszeile.datum;
@@ -572,5 +561,8 @@ public class MoneyView extends JFrame {
 
 
         addMessage(moneyController.getMessage());
+
+
+        model.fireTableDataChanged();
     }
 }
