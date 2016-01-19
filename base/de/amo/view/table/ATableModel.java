@@ -138,6 +138,10 @@ public abstract class ATableModel extends AbstractTableModel {
         return dataVector;
     }
 
+    public Object getData(int row) {
+        return dataVector.get(row);
+    }
+
     public abstract Object createEmptyRecord();
 
     public void addEmptyRow() {
