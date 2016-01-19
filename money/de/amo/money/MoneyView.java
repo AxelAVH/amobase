@@ -3,10 +3,10 @@ package de.amo.money;
 import de.amo.tools.ConditionChecker;
 import de.amo.view.*;
 import de.amo.view.table.ATableForm;
+import de.amo.view.table.ATableRowSorter;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
@@ -114,6 +114,10 @@ public class MoneyView extends JFrame {
         ATableForm tableForm = new ATableForm(model);
 
         final JTable table = tableForm.getTable();
+
+        ATableRowSorter sorter = new ATableRowSorter();
+        table.setRowSorter( sorter );
+        sorter.setModel( model );
 
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
