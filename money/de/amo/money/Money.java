@@ -4,6 +4,7 @@ import de.amo.tools.FileHandler;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by amo on 22.08.2015.
@@ -69,6 +70,13 @@ public class Money {
 
         if (kontodir == null) {
             System.out.println("Parameter 'kontodir' ist anzugeben!");
+            System.exit(0);
+        }
+
+        try {
+            Kategoriefacade.init(kontodir);
+        } catch (IOException e) {
+            e.printStackTrace();
             System.exit(0);
         }
 
