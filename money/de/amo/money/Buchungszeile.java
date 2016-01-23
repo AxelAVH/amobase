@@ -62,8 +62,8 @@ public class Buchungszeile implements Cloneable {
         }
         pro.pbetrag         = 0;
         contra.pbetrag      = 0;
-        pro.betrag          = betrag;
-        contra.betrag       = -betrag;
+        pro.betrag          = -betrag;
+        contra.betrag       = betrag;
         pro.kategorie       = this.kategorie;
         contra.kategorie    = kategorie;
         pro.kommentar       = kommentar;
