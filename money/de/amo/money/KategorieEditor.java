@@ -73,7 +73,7 @@ public class KategorieEditor {
                     Kategoriefacade.get().loadKategorien();
                     tableModel.getDataVector().clear();
                     tableModel.getDataVector().addAll(Kategoriefacade.get().getKategorien());
-                } catch (BackingStoreException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 tableModel.fireTableDataChanged();
