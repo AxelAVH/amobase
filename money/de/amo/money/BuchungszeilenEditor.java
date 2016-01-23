@@ -34,12 +34,20 @@ public class BuchungszeilenEditor extends JDialog {
         this.buchungszeilen  = buchungszeilen;
 
         setModal(true);
-        if (buchungszeilen.length != 1 || nurKategorie) {
+
+        String buchungszeilenString = "";
+        for (int i = 0; i < buchungszeilen.length; i++) {
+            Buchungszeile buchungszeile = buchungszeilen[i];
+            buchungszeilenString += buchungszeile.hauptbuchungsNr+"/"+buchungszeile.umbuchungNr+"; ";
+        }
+
+
+        if (nurKategorie) {
             setSize(1200, 150);     /*  ToDo: Festnageln auf die Größe???*/
-            setTitle("Kategorien übergreifende festlegen");
+            setTitle("Kategorien übergreifend festlegen : " + buchungszeilenString);
         } else {
             setSize(1200, 750);     /*  ToDo: Festnageln auf die Größe???*/
-            setTitle("Buchungszeile bearbeiten");
+            setTitle("Buchungszeile bearbeiten : " + buchungszeilenString);
         }
 
         JPanel mainPanel = new JPanel();
@@ -48,15 +56,17 @@ public class BuchungszeilenEditor extends JDialog {
 
         buchungszeilenEditorActionListener = new BuchungszeilenEditorActionListener(this);
 
-        if (buchungszeilen.length == 1 && !nurKategorie) {
+        if (!nurKategorie) {
             mainPanel.add(createGrunddatenPanel(buchungszeilen[0]));
         }
 
-        mainPanel.add(createKategoriePanel(buchungszeilen));
+        if (nurKategorie) {
+            mainPanel.add(createKategoriePanel(buchungszeilen));
+        }
 
-        if (buchungszeilen.length == 1 && !nurKategorie) {
+        if (!nurKategorie) {
 
-            mainPanel.add(createSplittPanel(buchungszeilen[0]));
+            mainPanel.add(createSplittPanel());
 
             if (!buchungszeilen[0].isUmbuchung()) {
                 mainPanel.add(createPDatenPanel(buchungszeilen[0]));
@@ -139,6 +149,15 @@ public class BuchungszeilenEditor extends JDialog {
         aFieldPane = new AFieldPane("Kategorie", kategorie, 25, 150, 900, 0);
         kategoriePanel.add(aFieldPane);
 
+        String kommentarVorbelegung = "";
+        if (buchungszeilen.length == 1) {
+            kommentarVorbelegung = buchungszeilen[0].kommentar;
+        }
+
+        kommentar = AStringInputField.create(kommentarVorbelegung);
+        aFieldPane = new AFieldPane("Kommentar", kommentar, 25, 150, 990, 0);
+        kategoriePanel.add(aFieldPane);
+
         buttonPanel = createButtonPanel_Kategorie();
         buttonPanel.setBounds(200, 270, 300, 40);
         kategoriePanel.add(buttonPanel);
@@ -146,14 +165,14 @@ public class BuchungszeilenEditor extends JDialog {
         return kategoriePanel;
     }
 
-    private JPanel createSplittPanel(Buchungszeile buchungszeile) {
+    private JPanel createSplittPanel() {
         JPanel splittbuchungsPanel = new JPanel();
         splittbuchungsPanel.setBorder(new TitledBorder("Splitt-Buchungen"));
         splittbuchungsPanel.setLayout(new javax.swing.BoxLayout(splittbuchungsPanel, javax.swing.BoxLayout.Y_AXIS));
 
         splittbetrag = ANumberInputField.create(0,2);
-        AFieldPane aFieldPane = new AFieldPane("Splitt-Betrag", splittbetrag, 25, 150, 100, 30);
-        aFieldPane.getTrailingLabel().setText("EUR");
+        AFieldPane aFieldPane = new AFieldPane("Splitt-Betrag", splittbetrag, 25, 150, 100, 500);
+        aFieldPane.getTrailingLabel().setText("EUR    ( Sollte gleiches Vorzeichen wie die orignäre Buchung haben )");
         splittbuchungsPanel.add(aFieldPane);
 
         splittKategorie = AComboboxInputField.create(null, Kategoriefacade.get().getComboboxList());
@@ -209,7 +228,32 @@ public class BuchungszeilenEditor extends JDialog {
         buttonPanel.add(label);
 
         kategorieSaveButton = new JButton("Kategorie übernehmen");
+        kategorieSaveButton.setDefaultCapable(true);
         kategorieSaveButton.addActionListener(buchungszeilenEditorActionListener);
+        kategorieSaveButton.setSelected(true);
+
+
+/*        //Code, um mit Enter-Taste Button "zu aktivieren":
+        KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "Enter");
+        getRootPane().getActionMap().put("Enter", new AbstractAction()
+        {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                //Button aktivieren:
+                //kategorieSaveButton.setEnabled(true);
+
+                //oder
+
+                //Button fokusieren:
+                kategorieSaveButton.requestFocusInWindow();
+            }
+        });
+*/
+
 
         buttonPanel.add(kategorieSaveButton);
         return buttonPanel;
@@ -303,6 +347,7 @@ public class BuchungszeilenEditor extends JDialog {
                     for (int i = 0; i < buchungszeilen.length; i++) {
                         Buchungszeile buchungszeile = buchungszeilen[i];
                         buchungszeile.kategorie = kategorie;
+                        buchungszeile.kommentar =editor.kommentar.getText();
                     }
 
                     moneyController.getMoneyTr().setIsSaved(false);
