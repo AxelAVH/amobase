@@ -45,7 +45,7 @@ public class ANumberInputField extends JFormattedTextField {
         inputField.addKeyListener(new KeyListener() {
                                       @Override
                                       public void keyTyped(KeyEvent e) {
-                                          String allowed = "0123456789,.";
+                                          String allowed = "0123456789,.-";
                                           Character typed = e.getKeyChar();
                                           if (allowed.indexOf(typed) < 0) {
                                               e.setKeyChar(e.CHAR_UNDEFINED);
