@@ -146,6 +146,7 @@ public class BuchungszeilenEditor extends JDialog {
             sKat = buchungszeilen[0].kategorie;
         }
         kategorie = AComboboxInputField.create(sKat, Kategoriefacade.get().getComboboxList());
+        kategorie.setMaximumRowCount(40);
         aFieldPane = new AFieldPane("Kategorie", kategorie, 25, 150, 900, 0);
         kategoriePanel.add(aFieldPane);
 
