@@ -125,13 +125,13 @@ public class MoneyView extends JFrame {
                     int row = table.getSelectedRow();
                     if (row >= 0) {
                         int[] selectedRows = table.getSelectedRows();
-                        if (selectedRows.length == 0) {
+                        if (selectedRows.length != 1) {
                             return;
                         }
                         Buchungszeile[] buchungszeiles = new Buchungszeile[selectedRows.length];
                         for (int i = 0; i < selectedRows.length; i++) {
                             int selectedRow = selectedRows[i];
-                            buchungszeiles[i] = (Buchungszeile) model.getData(selectedRow);
+                            buchungszeiles[i] = (Buchungszeile) model.getData(  table.convertRowIndexToModel(selectedRow));
 
                         }
                         BuchungszeilenEditor editor = new BuchungszeilenEditor(moneyController, buchungszeiles, false);
@@ -162,7 +162,7 @@ public class MoneyView extends JFrame {
                     Buchungszeile[] buchungszeiles = new Buchungszeile[selectedRows.length];
                     for (int i = 0; i < selectedRows.length; i++) {
                         int selectedRow = selectedRows[i];
-                        buchungszeiles[i] = (Buchungszeile) model.getData(selectedRow);
+                        buchungszeiles[i] = (Buchungszeile) model.getData(table.convertRowIndexToModel(selectedRow));
 
                     }
                     BuchungszeilenEditor editor = new BuchungszeilenEditor(moneyController, buchungszeiles, true);
