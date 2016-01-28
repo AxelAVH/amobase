@@ -26,7 +26,7 @@ public class BuchungszeilenTableModel extends ATableModel {
         if (Fachwerte.HAUPTBUCHUNGSNR.equals(attributName))     return buchungszeile.hauptbuchungsNr;
         if (Fachwerte.KATEGORIE.equals(attributName))           return buchungszeile.kategorie;
         if (Fachwerte.KOMMENTAR.equals(attributName))           return buchungszeile.kommentar;
-        if (Fachwerte.PBETRAG.equals(attributName))             return buchungszeile.getBetragAsDouble();
+        if (Fachwerte.PBETRAG.equals(attributName))             return buchungszeile.getPBetragAsDouble();
         if (Fachwerte.PSALDO.equals(attributName))              return buchungszeile.getPSaldoAsDouble();
         if (Fachwerte.QUELLEZIEL.equals(attributName))          return buchungszeile.quelleZiel;
         if (Fachwerte.SALDO.equals(attributName))               return buchungszeile.getSaldoAsDouble();
