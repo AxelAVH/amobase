@@ -1,6 +1,7 @@
 package de.amo.money;
 
 import de.amo.tools.Datum;
+import de.amo.view.AToolTipHeader;
 import de.amo.view.AmoStyle;
 import de.amo.view.cellrenderer.Integer2FloatCellRenderer;
 
@@ -183,6 +184,16 @@ public class Reportgenerator {
                 return super.getCellRenderer(row, column);
             }
         };
+
+        // und jetzt noch Tooltips für die Spaltenköpfe:
+        List <Kategorie> kategories = Kategoriefacade.get().getKategorien();
+        Map<String, String> tooltipmap = new HashMap<>();
+        for (Kategorie kategory : kategories) {
+            tooltipmap.put(kategory.getCode(), kategory.getBeschreibung());
+        }
+        AToolTipHeader header = new AToolTipHeader(table.getColumnModel(), tooltipmap);
+        //header.setToolTipText("Default ToolTip TEXT");
+        table.setTableHeader(header);
 
         if (AmoStyle.isGuiTestMode()) {
             // der wirkt wirklich
