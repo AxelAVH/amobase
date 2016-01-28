@@ -149,6 +149,10 @@ public class Buchungszeile implements Cloneable {
         return fromInt(pbetrag);
     }
 
+    public double getPBetragAsDouble() {
+        return fromInt(pbetrag);
+    }
+
     public void setPBetrag(double pbetrag) {
         this.pbetrag = fromDouble(pbetrag);
     }
