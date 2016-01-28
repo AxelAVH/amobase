@@ -38,9 +38,17 @@ public class Reportgenerator {
 
     private void berechneJahressummen(List<Buchungszeile> buchungszeilen) {
 
+        String heuteMonat = Datum.heute().substring(0,6);
+
         jahresSumme = new TreeMap<String, Integer>();
 
         for (Buchungszeile buchungszeile : buchungszeilen) {
+
+            // der heutige (angebrochene) Monat wird nicht betrachtet
+            if (buchungszeile.datum.startsWith(heuteMonat)) {
+                continue;
+            }
+
             String kat = buchungszeile.kategorie;
             if (kat == null) {
                 kat = "";
@@ -127,7 +135,8 @@ public class Reportgenerator {
         for (String  jahr : reportJahre) {
 
             if (heute.startsWith(jahr)) {
-                monateImJahr = new BigDecimal(monatHeuteI);
+                // der heutige (angebrochene) Monat wird nicht betrachtet
+                monateImJahr = new BigDecimal(monatHeuteI - 1);
             }
 
             int coloumn = 0;
@@ -139,9 +148,13 @@ public class Reportgenerator {
                 Integer value = jahresSumme.get(jahr + kat);
                 coloumn++;
                 if (value != null) {
-                    BigDecimal bd = new BigDecimal(value);
-                    bd = bd.divide(monateImJahr,BigDecimal.ROUND_HALF_UP);
-                    value = bd.intValue();
+                    if (monateImJahr.intValue() > 0) {
+                        BigDecimal bd = new BigDecimal(value);
+                        bd = bd.divide(monateImJahr, BigDecimal.ROUND_HALF_UP);
+                        value = bd.intValue();
+                    } else {
+                        value = 0;
+                    }
                 }
                 rowData[coloumn] = value;
             }
