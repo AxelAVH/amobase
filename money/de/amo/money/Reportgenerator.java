@@ -27,11 +27,16 @@ public class Reportgenerator {
     private SortedMap<String, Integer> jahresSumme;
 
     public Reportgenerator(List<Buchungszeile> buchungszeilen, JTabbedPane tabbedPane) {
-
+        // die Spaltenköpfe (betroffene Kategorien) ermitteln:
         initReportKategorien(buchungszeilen);
-        initReportMonate();
+
+        // die betroffenen Monate und Jahre ermitteln:
+        initReportZeitraeume();
+
+        // die Summen pro Kategorie und Jahr ermitteln:
         berechneJahressummen(buchungszeilen);
 
+        // Darstellung:
         JPanel tablePanel = createTablePanel();
         tabbedPane.add("Auswertung", tablePanel);
     }
@@ -53,14 +58,14 @@ public class Reportgenerator {
             if (kat == null) {
                 kat = "";
             }
-            kat = kat + "  ";
+            kat = kat + "--";
 
-            String jahr = buchungszeile.datum.substring(0,4);
-            String kat1 = jahr + kat.substring(0, 2);
-            String kat2 = jahr + kat.substring(0, 1);
+            String jahr = buchungszeile.datum.substring (0, 4);
+            String jahrUndKatFein = jahr + kat.substring(0, 2);
+            String jahrUndKatGrob = jahr + kat.substring(0, 1);
 
-            Integer int1 = jahresSumme.get(kat1);
-            Integer int2 = jahresSumme.get(kat2);
+            Integer int1 = jahresSumme.get(jahrUndKatFein);
+            Integer int2 = jahresSumme.get(jahrUndKatGrob);
 
             if (int1 == null) {
                 int1 = new Integer(0);
@@ -71,13 +76,13 @@ public class Reportgenerator {
 
             int1 += buchungszeile.betrag;
             int2 += buchungszeile.betrag;
-            jahresSumme.put(kat1, int1);
-            jahresSumme.put(kat2, int2);
+            jahresSumme.put(jahrUndKatFein, int1);
+            jahresSumme.put(jahrUndKatGrob, int2);
         }
     }
 
 
-    private void initReportMonate() {
+    private void initReportZeitraeume() {
         reportMonate = new TreeSet();
         reportJahre  = new TreeSet();
         String heute = Datum.heute();
@@ -102,9 +107,9 @@ public class Reportgenerator {
             if (kat == null) {
                 kat = "";
             }
-            kat = kat + "  ";
-            reportKategorienFein.add(kat.substring(0, 2));
-            reportKategorienGrob.add(kat.substring(0, 1));
+            kat = kat + "--";
+            reportKategorienFein.add(kat.substring(0, 2));  // den kompletten Kategoriecode als Gruppierungsmerkmal
+            reportKategorienGrob.add(kat.substring(0, 1));  // Nur das erste Zeichen der Kategorie als Gruppierungsmerkmal
         }
     }
 
@@ -139,10 +144,11 @@ public class Reportgenerator {
                 monateImJahr = new BigDecimal(monatHeuteI - 1);
             }
 
-            int coloumn = 0;
             Object[] rowData = new Object[reportKategorien.size()+1];
 
-            rowData[coloumn] = jahr;
+            int coloumn = 0;
+
+            rowData[coloumn] = jahr;    // in Spalte "0" steht das Jahr
 
             for (String kat : reportKategorien) {
                 Integer value = jahresSumme.get(jahr + kat);
@@ -204,6 +210,8 @@ public class Reportgenerator {
         for (Kategorie kategory : kategories) {
             tooltipmap.put(kategory.getCode(), kategory.getBeschreibung());
         }
+        tooltipmap.put("-","Keine Kategoriezuordnung");
+        tooltipmap.put("--","Keine Kategoriezuordnung");
         AToolTipHeader header = new AToolTipHeader(table.getColumnModel(), tooltipmap);
         //header.setToolTipText("Default ToolTip TEXT");
         table.setTableHeader(header);
