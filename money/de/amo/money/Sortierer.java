@@ -50,6 +50,31 @@ public class Sortierer {
         if (lastBuchung != null) {
             lastSaldo = lastBuchung.saldo;
         }
+
+        // zuerst eine eventuell komplementäre Umbuchung rausfischen:
+        if (lastBuchung != null) {
+            for (Buchungszeile buchungszeile : potentielleNachfolger) {
+                if (lastBuchung.hauptbuchungsNr > 0 &&      // Umbuchungen sollte es erst geben, wenn der Buchungsatz einmal gespeichert wurde.
+//                    lastBuchung.umbuchungNr > 0 &&          // nur dann liegt eine Umbuchung vor
+                        lastBuchung.hauptbuchungsNr == buchungszeile.hauptbuchungsNr && (lastBuchung.umbuchungNr) == buchungszeile.umbuchungNr) {
+                    potentielleNachfolger.remove(buchungszeile);
+                    return buchungszeile;
+                }
+            }
+        }
+
+        // dann eine evtl. Umbuchung rausfischen:
+        if (lastBuchung != null) {
+            for (Buchungszeile buchungszeile : potentielleNachfolger) {
+                if (lastBuchung.hauptbuchungsNr > 0 &&      // Umbuchungen sollte es erst geben, wenn der Buchungsatz einmal gespeichert wurde.
+//                    lastBuchung.umbuchungNr > 0 &&          // nur dann liegt eine Umbuchung vor
+                        lastBuchung.hauptbuchungsNr == buchungszeile.hauptbuchungsNr && (lastBuchung.umbuchungNr+1) == buchungszeile.umbuchungNr) {
+                    potentielleNachfolger.remove(buchungszeile);
+                    return buchungszeile;
+                }
+            }
+        }
+
         for (Buchungszeile buchungszeile : potentielleNachfolger) {
             if (lastSaldo + buchungszeile.betrag == buchungszeile.saldo) {
                 potentielleNachfolger.remove(buchungszeile);
