@@ -280,6 +280,7 @@ public class Buchungszeile implements Cloneable {
 
     public String toShow() {
         return datum.substring(6, 8) + "." + datum.substring(4, 6) + "." + datum.substring(0, 4) + " | " +
+                (hauptbuchungsNr + " | " + umbuchungNr + " | ") +
                 (quelleZiel + "                                         ").substring(0, 30) + " | " +
                 (buchungstext + "                                       ").substring(0, 20) + " | " +
                 (verwendungszweck + "                                   ").substring(0, 40) + " | " +
