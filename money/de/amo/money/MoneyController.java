@@ -142,93 +142,93 @@ public class MoneyController {
     }
 
 
-    public class StatistikVerbrauch extends IOToolsSelectItem {
-        StatistikVerbrauch(IOToolsSelectMenue menue) {
-            super(menue);
-            setAnzeigeText("Verbrauchs-Statistik");
-        }
+//    public class StatistikVerbrauch extends IOToolsSelectItem {
+//        StatistikVerbrauch(IOToolsSelectMenue menue) {
+//            super(menue);
+//            setAnzeigeText("Verbrauchs-Statistik");
+//        }
+//
+//        @Override
+//        public boolean doIt() throws Exception {
+//
+//            SortedMap<String, Integer> monatsgehalt = new TreeMap<String, Integer>();
+//            SortedMap<String, Integer> monatsverbrauch = new TreeMap<String, Integer>();
+//            SortedMap<String, Integer> jahresgehalt = new TreeMap<String, Integer>();
+//            SortedMap<String, Integer> jahresverbrauch = new TreeMap<String, Integer>();
+//
+//            for (Buchungszeile buchungszeile : moneyTr.getAktuelleDaten()) {
+//
+//                String jahr = buchungszeile.datum.substring(0, 4);
+//                String monat = buchungszeile.datum.substring(0, 6);
+//
+//                Integer saldoJahr = jahresverbrauch.get(jahr);
+//                Integer saldoMonat = monatsverbrauch.get(monat);
+//                Integer gehaltJahr = jahresgehalt.get(jahr);
+//                Integer gehaltMonat = monatsgehalt.get(monat);
+//
+//                if (saldoJahr == null) {
+//                    saldoJahr = new Integer(0);
+//                }
+//                if (saldoMonat == null) {
+//                    saldoMonat = new Integer(0);
+//                }
+//                if (gehaltMonat == null) {
+//                    gehaltMonat = new Integer(0);
+//                }
+//                if (gehaltJahr == null) {
+//                    gehaltJahr = new Integer(0);
+//                }
+//
+//                String verwendungszweck = buchungszeile.verwendungszweck.toUpperCase();
+//                if (verwendungszweck.contains("LOHN") && verwendungszweck.contains("GEHALT")) {
+//                    if (buchungszeile.quelleZiel.contains("dbh")) {
+//                        gehaltJahr += buchungszeile.pbetrag;
+//                        gehaltMonat += buchungszeile.pbetrag;
+//                    }
+//                } else {
+//                    saldoJahr += buchungszeile.pbetrag;
+//                    saldoMonat += buchungszeile.pbetrag;
+//                }
+//
+//                if ("201506".equals(monat)) {
+//                    System.out.println(formatBetrag(buchungszeile.betrag) + "   " + buchungszeile.verwendungszweck);
+//                }
+//
+//                jahresverbrauch.put(jahr, new Integer(saldoJahr));
+//                monatsverbrauch.put(monat, new Integer(saldoMonat));
+//                jahresgehalt.put(jahr, new Integer(gehaltJahr));
+//                monatsgehalt.put(monat, new Integer(gehaltMonat));
+//
+//            }
+//
+//            System.out.println("Monatlicher Eigenverbrauch:");
+//            for (Map.Entry<String, Integer> monatsEntry : monatsverbrauch.entrySet()) {
+//                String monat = monatsEntry.getKey();
+//                Integer gehalt = monatsgehalt.get(monat);
+//                if (gehalt == null) {
+//                    gehalt = new Integer(0);
+//                }
+//
+//                String s = formatBetrag(gehalt);
+//                int diff = gehalt + monatsEntry.getValue();
+//                String ueber = formatBetrag(diff);
+//                System.out.println(monat + " : " + formatBetrag(monatsEntry.getValue()) + "  Gehalt: " + s + "  ueber: " + ueber);
+//            }
+//
+//            System.out.println("Jährlicher Eigenverbrauch:");
+//            for (Map.Entry<String, Integer> jahresEntry : jahresverbrauch.entrySet()) {
+//                System.out.println(jahresEntry.getKey() + " : " + formatBetrag(jahresEntry.getValue()));
+//            }
+//
+//            return true;
+//        }
+//    }
 
-        @Override
-        public boolean doIt() throws Exception {
-
-            SortedMap<String, Integer> monatsgehalt = new TreeMap<String, Integer>();
-            SortedMap<String, Integer> monatsverbrauch = new TreeMap<String, Integer>();
-            SortedMap<String, Integer> jahresgehalt = new TreeMap<String, Integer>();
-            SortedMap<String, Integer> jahresverbrauch = new TreeMap<String, Integer>();
-
-            for (Buchungszeile buchungszeile : moneyTr.getAktuelleDaten()) {
-
-                String jahr = buchungszeile.datum.substring(0, 4);
-                String monat = buchungszeile.datum.substring(0, 6);
-
-                Integer saldoJahr = jahresverbrauch.get(jahr);
-                Integer saldoMonat = monatsverbrauch.get(monat);
-                Integer gehaltJahr = jahresgehalt.get(jahr);
-                Integer gehaltMonat = monatsgehalt.get(monat);
-
-                if (saldoJahr == null) {
-                    saldoJahr = new Integer(0);
-                }
-                if (saldoMonat == null) {
-                    saldoMonat = new Integer(0);
-                }
-                if (gehaltMonat == null) {
-                    gehaltMonat = new Integer(0);
-                }
-                if (gehaltJahr == null) {
-                    gehaltJahr = new Integer(0);
-                }
-
-                String verwendungszweck = buchungszeile.verwendungszweck.toUpperCase();
-                if (verwendungszweck.contains("LOHN") && verwendungszweck.contains("GEHALT")) {
-                    if (buchungszeile.quelleZiel.contains("dbh")) {
-                        gehaltJahr += buchungszeile.pbetrag;
-                        gehaltMonat += buchungszeile.pbetrag;
-                    }
-                } else {
-                    saldoJahr += buchungszeile.pbetrag;
-                    saldoMonat += buchungszeile.pbetrag;
-                }
-
-                if ("201506".equals(monat)) {
-                    System.out.println(formatBetrag(buchungszeile.betrag) + "   " + buchungszeile.verwendungszweck);
-                }
-
-                jahresverbrauch.put(jahr, new Integer(saldoJahr));
-                monatsverbrauch.put(monat, new Integer(saldoMonat));
-                jahresgehalt.put(jahr, new Integer(gehaltJahr));
-                monatsgehalt.put(monat, new Integer(gehaltMonat));
-
-            }
-
-            System.out.println("Monatlicher Eigenverbrauch:");
-            for (Map.Entry<String, Integer> monatsEntry : monatsverbrauch.entrySet()) {
-                String monat = monatsEntry.getKey();
-                Integer gehalt = monatsgehalt.get(monat);
-                if (gehalt == null) {
-                    gehalt = new Integer(0);
-                }
-
-                String s = formatBetrag(gehalt);
-                int diff = gehalt + monatsEntry.getValue();
-                String ueber = formatBetrag(diff);
-                System.out.println(monat + " : " + formatBetrag(monatsEntry.getValue()) + "  Gehalt: " + s + "  ueber: " + ueber);
-            }
-
-            System.out.println("Jährlicher Eigenverbrauch:");
-            for (Map.Entry<String, Integer> jahresEntry : jahresverbrauch.entrySet()) {
-                System.out.println(jahresEntry.getKey() + " : " + formatBetrag(jahresEntry.getValue()));
-            }
-
-            return true;
-        }
-    }
-
-    private String formatBetrag(int betrag) {
-        String ret = "                      " + betrag;
-        ret = ret.substring(0, ret.length() - 2) + "." + ret.substring(ret.length() - 2);
-        return ret.substring(ret.length() - 10);
-    }
+//    private String formatBetrag(int betrag) {
+//        String ret = "                      " + betrag;
+//        ret = ret.substring(0, ret.length() - 2) + "." + ret.substring(ret.length() - 2);
+//        return ret.substring(ret.length() - 10);
+//    }
 
 
     public void createSplittbuchungen(Buchungszeile parent, int betrag, String kategorie, String kommentar) {
