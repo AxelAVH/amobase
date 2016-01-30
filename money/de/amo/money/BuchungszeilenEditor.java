@@ -337,6 +337,7 @@ public class BuchungszeilenEditor extends JDialog {
                     buchungszeilen[0].kommentar = editor.kommentar.getText();
                     buchungszeilen[0].pbetrag = editor.pbetrag.getIntValue();
 
+                    moneyController.getMoneyTr().recalculate();
                     moneyController.getMoneyTr().setIsSaved(false);
 
                     dispose();
