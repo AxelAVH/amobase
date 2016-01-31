@@ -1,6 +1,7 @@
 package de.amo.money;
 
 import de.amo.tools.Datum;
+import de.amo.tools.Environment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ public class MoneyTransient {
 
     SortedMap<String, Buchungszeile>    buchungszeilen          = new TreeMap<String, Buchungszeile>();
     List<Buchungszeile>                 sortierteBuchungszeilen = new ArrayList<Buchungszeile>();
+
+    File umsatzdateienDownloadDir       = Environment.getOS_DownloadDir();
 
 
     List<Buchungszeile> forecast = new ArrayList<Buchungszeile>();
@@ -101,6 +104,11 @@ public class MoneyTransient {
 
     public void setLastBackupDatabaseFile(File lastBackupDatabaseFile) {
         this.lastBackupDatabaseFile = lastBackupDatabaseFile;
+    }
+
+
+    public File getUmsatzdateienDownloadDir() {
+        return umsatzdateienDownloadDir;
     }
 
     /** Berechnet die Salden anhand der aktuellen Buchungszeilen
@@ -177,6 +185,21 @@ public class MoneyTransient {
 
         sortierteBuchungszeilen.add(lastIndex + 1, pro);
         sortierteBuchungszeilen.add(lastIndex + 2, contra);
+    }
+
+    public int ermittleAnzahlUmsatzdateienImDownload() {
+        int ret = 0;
+        File dir = getUmsatzdateienDownloadDir();
+        File[] files = dir.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            File file = files[i];
+            String name = file.getName().toLowerCase();
+            if (name.startsWith("umsatzanzeige") && file.getName().endsWith(".csv")) {
+                System.out.println("  Lese Datei " + file.getName());
+                ret++;
+            }
+        }
+        return ret;
     }
 
 }

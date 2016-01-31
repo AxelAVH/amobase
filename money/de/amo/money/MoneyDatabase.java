@@ -51,7 +51,7 @@ public class MoneyDatabase {
 
         List<File> verarbeiteteFiles = new ArrayList<>();
 
-        File dir = new File(kontodir);
+        File dir = moneyTr.umsatzdateienDownloadDir;
         File[] files = dir.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];

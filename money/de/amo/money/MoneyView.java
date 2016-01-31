@@ -26,9 +26,11 @@ public class MoneyView extends JFrame {
     private ANumberInputField   pSaldoAmInput;
     private ANumberInputField   zahlungAmInput;
     private AStringInputField   datenbankNameInput;
+    private AStringInputField   umsatzDateienUploadDir;
 
     private AFieldPane zahlungAmPane;
     private AFieldPane psaldoAmPane;
+    private AFieldPane umsatzDateienUploadPane;
 
     public AStringInputField    summaryLabelDatenbankSaved;
 
@@ -239,6 +241,11 @@ public class MoneyView extends JFrame {
         zahlungAmPane = new AFieldPane("Zahlung am ", zahlungAmInput, 20, 150, 100, 30);
         zahlungAmPane.getTrailingLabel().setText("EUR");
         summaryPanel.add(zahlungAmPane);
+
+        umsatzDateienUploadDir = AStringInputField.create("");
+        umsatzDateienUploadDir.setEditable(false);
+        umsatzDateienUploadPane = new AFieldPane("Bankdaten Download", umsatzDateienUploadDir,20,150,400,20);
+        summaryPanel.add(umsatzDateienUploadPane);
 
 
         if (AmoStyle.isGuiTestMode()) {
@@ -552,6 +559,8 @@ public class MoneyView extends JFrame {
         zahlungAmInput              .setValue(moneyTr.getpToNullBetragMonatsanfang(),2);
         datenbankNameInput          .setValue(moneyController.getMoneyDatabase().getKontodir());
         summaryLabelDatenbankSaved  .setValue(moneyTr.isSaved() ? "Ja" : "Nein");
+        umsatzDateienUploadDir      .setValue(moneyTr.getUmsatzdateienDownloadDir().getAbsolutePath());
+        umsatzDateienUploadPane.getTrailingLabel().setText("("+moneyTr.ermittleAnzahlUmsatzdateienImDownload()+")");
 
         erstesDatum             = erstesDatum.substring(6, 8) + "." + erstesDatum.substring(4, 6) + "." + erstesDatum.substring(0, 4);
         letztesDatum            = letztesDatum.substring(6, 8) + "." + letztesDatum.substring(4, 6) + "." + letztesDatum.substring(0, 4);
