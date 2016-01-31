@@ -37,6 +37,15 @@ public class Reportgenerator {
         berechneJahressummen(buchungszeilen);
 
         // Darstellung:
+        int tabCount = tabbedPane.getTabCount();
+        for (int i = 0; i < tabCount; i++) {
+            String title = tabbedPane.getTitleAt(i);
+            if ("Auswertung".equals(title)) {
+                tabbedPane.remove(i);
+                break;
+            }
+        }
+
         JPanel tablePanel = createTablePanel();
         tabbedPane.add("Auswertung", tablePanel);
     }
