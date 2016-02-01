@@ -1,6 +1,7 @@
 package de.amo.money;
 
 import de.amo.view.AmoStyle;
+import de.amo.view.ErrorMessageDialog;
 import de.amo.view.table.ATableForm;
 
 import javax.swing.*;
@@ -28,9 +29,11 @@ public class KategorieEditor {
         this.moneyView = moneyView;
 
         JPanel main = new JPanel();
+
         main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
         main.add(createTablePanel());
         main.add(createButtonPanel());
+
         return main;
     }
 
@@ -38,7 +41,7 @@ public class KategorieEditor {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-        saveButton = new JButton("Speichern");
+        saveButton  = new JButton("Speichern");
         abortButton = new JButton("Abbrechen");
 
         JPanel bp = new JPanel();
@@ -62,28 +65,30 @@ public class KategorieEditor {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
 
-            if (actionEvent.getSource() == saveButton) {
-                moneyView.addMessage("Speichern Event erhalten");
+            try {
 
-                Kategoriefacade.get().getKategorien().clear();
-                Kategoriefacade.get().getKategorien().addAll(tableModel.getDataVector());
+                if (actionEvent.getSource() == saveButton) {
+                    moneyView.addMessage("Speichern Event erhalten");
 
-                try {
+                    Kategoriefacade.get().getKategorien().clear();
+                    Kategoriefacade.get().getKategorien().addAll(tableModel.getDataVector());
+
                     Kategoriefacade.get().saveKategorien();
                     Kategoriefacade.get().loadKategorien();
                     tableModel.getDataVector().clear();
                     tableModel.getDataVector().addAll(Kategoriefacade.get().getKategorien());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    tableModel.fireTableDataChanged();
                 }
-                tableModel.fireTableDataChanged();
-            }
 
-            if (actionEvent.getSource() == abortButton) {
-                moneyView.addMessage("Abbrechen Event erhalten");
-                tableModel.getDataVector().clear();
-                tableModel.getDataVector().addAll(Kategoriefacade.get().getKategorien());
-                tableModel.fireTableDataChanged();
+                if (actionEvent.getSource() == abortButton) {
+                    moneyView.addMessage("Abbrechen Event erhalten");
+                    tableModel.getDataVector().clear();
+                    tableModel.getDataVector().addAll(Kategoriefacade.get().getKategorien());
+                    tableModel.fireTableDataChanged();
+                }
+
+            } catch (Exception e) {
+                new ErrorMessageDialog("Fehler beim Editieren","",e);
             }
         }
     }
