@@ -43,7 +43,7 @@ public class BuchungszeilenEditor extends JDialog {
 
 
         if (nurKategorie) {
-            setSize(1200, 150);     /*  ToDo: Festnageln auf die Größe???*/
+            setSize(1200, 250);     /*  ToDo: Festnageln auf die Größe???*/
             setTitle("Kategorien übergreifend festlegen : " + buchungszeilenString);
         } else {
             setSize(1200, 750);     /*  ToDo: Festnageln auf die Größe???*/
@@ -158,6 +158,14 @@ public class BuchungszeilenEditor extends JDialog {
         kommentar = AStringInputField.create(kommentarVorbelegung);
         aFieldPane = new AFieldPane("Kommentar", kommentar, 25, 150, 990, 0);
         kategoriePanel.add(aFieldPane);
+
+        JPanel p = new JPanel();
+        JLabel label = new JLabel("Zum Verschieben der Buchung in die Auswertung des Vorjahres muss der Code '$Vorjahr$' im Kommentar enthalten sein.");
+        label.setHorizontalAlignment(JLabel.RIGHT);
+        label.setBackground(Color.orange);
+        p.add(label);
+        kategoriePanel.add(p);
+
 
         buttonPanel = createButtonPanel_Kategorie();
         buttonPanel.setBounds(200, 270, 300, 40);
@@ -367,6 +375,11 @@ public class BuchungszeilenEditor extends JDialog {
                     dispose();
                 }
             } catch (Exception e) {
+                try {
+                    dispose();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 new ErrorMessageDialog(titel, e.getMessage(), e);
             }
         }
