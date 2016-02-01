@@ -58,8 +58,20 @@ public class Reportgenerator {
 
         for (Buchungszeile buchungszeile : buchungszeilen) {
 
+            String datum = buchungszeile.datum;
+            String jahr = datum.substring (0, 4);
+
+            if (buchungszeile.kommentar.contains("$Vorjahr$")) {
+                datum = datum.substring(0,4);
+                int datumI = Integer.parseInt(datum);
+                datumI = datumI - 1;
+                datum = "" + datumI;
+                jahr = datum;
+            }
+
             // der heutige (angebrochene) Monat wird nicht betrachtet
-            if (buchungszeile.datum.startsWith(heuteMonat)) {
+            // ( Wenn Datum vorgezogen wurde, kann es nicht mehr im aktuellen Monat liegen)
+            if (datum.startsWith(heuteMonat)) {
                 continue;
             }
 
@@ -69,7 +81,6 @@ public class Reportgenerator {
             }
             kat = kat + "--";
 
-            String jahr = buchungszeile.datum.substring (0, 4);
             String jahrUndKatFein = jahr + kat.substring(0, 2);
             String jahrUndKatGrob = jahr + kat.substring(0, 1);
 
