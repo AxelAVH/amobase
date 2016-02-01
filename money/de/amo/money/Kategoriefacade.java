@@ -1,5 +1,7 @@
 package de.amo.money;
 
+import de.amo.view.ErrorMessageDialog;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -81,7 +83,11 @@ public class Kategoriefacade {
         if (selectedItem == null || "".equals(selectedItem)) {
             return null;
         }
-        return selectedItem.substring(0, selectedItem.indexOf(" - "));
+        if (selectedItem.length() > 2) {
+            selectedItem = selectedItem.substring(0, 2);
+        }
+        selectedItem = selectedItem.trim();
+        return selectedItem;
     }
 
     public void loadKategorien() throws IOException {
@@ -107,6 +113,16 @@ public class Kategoriefacade {
     }
 
     public void saveKategorien() throws IOException {
+
+        for (Kategorie kategorie : kategorien) {
+            if (kategorie.getCode() != null && !kategorie.getCode().trim().equals("")) {
+                if (kategorie.getCode().length() > 2) {
+                    new ErrorMessageDialog("Speichern nicht ausgeführt","Kategorie-Code muss ein oder zwei Zeichen lang sein.",null);
+                    return;
+                }
+            }
+        }
+
 
         if (propertyFile.exists()) {
             propertyFile.delete();
