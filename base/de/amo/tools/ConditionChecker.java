@@ -22,13 +22,45 @@ public class ConditionChecker {
             cond = cond.trim();
         }
 
-        cond = cond.toUpperCase();
+        cond  = cond.toUpperCase();
         value = value.toUpperCase();
 
-        if (value.contains(cond)) {
-            return !negate;
-        } else {
-            return negate;
+
+        try {
+            if (cond.startsWith("*") && cond.endsWith("*")) {
+                cond = cond.substring(1);
+                cond = cond.substring(0, cond.length() - 1);
+                if (value.contains(cond)) {
+                    return !negate;
+                } else {
+                    return negate;
+                }
+            }
+            if (cond.startsWith("*")) {
+                cond = cond.substring(1);
+                if (value.endsWith(cond)) {
+                    return !negate;
+                } else {
+                    return negate;
+                }
+            }
+            if (cond.endsWith("*")) {
+                cond = cond.substring(0, cond.length() - 1);
+                if (value.startsWith(cond)) {
+                    return !negate;
+                } else {
+                    return negate;
+                }
+            }
+            if (value.equals(cond)) {
+                return !negate;
+            } else {
+                return negate;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
+            return true;
         }
     }
 
