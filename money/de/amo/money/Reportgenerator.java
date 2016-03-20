@@ -139,9 +139,13 @@ public class Reportgenerator {
         JPanel tablePanel = new JPanel();
         tablePanel.setLayout(new BoxLayout(tablePanel,BoxLayout.Y_AXIS));
 
-        createTabelle(tablePanel, reportKategorienGrob, "Monatliche Umsätze pro Hauptkategorie");
+        String heuteMonat = Datum.heute().substring(0,6);
+        String monatserster = "01." + heuteMonat.substring(4,6)+"." + heuteMonat.substring(0,4);
 
-        createTabelle(tablePanel, reportKategorienFein, "Monatliche Umsätze pro Kategorie");
+
+        createTabelle(tablePanel, reportKategorienGrob, "Monatliche Umsätze pro Hauptkategorie (alles vor dem " + monatserster + ")");
+
+        createTabelle(tablePanel, reportKategorienFein, "Monatliche Umsätze pro Kategorie (alles vor dem " + monatserster + ")");
 
         return tablePanel;
     }
