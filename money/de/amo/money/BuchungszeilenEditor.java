@@ -15,7 +15,7 @@ public class BuchungszeilenEditor extends JDialog {
     MoneyController moneyController;
 
     private JPanel buttonPanel;
-    private JButton pDatenSaveButton, cancelButton, kategorieSaveButton, splittBuchungerzeugenButton;
+    private JButton pDatenSaveButton, cancelButton, /*kategorieSaveButton, */splittBuchungerzeugenButton;
     private BuchungszeilenEditorActionListener buchungszeilenEditorActionListener;
 
     Buchungszeile[]     buchungszeilen;
@@ -223,7 +223,9 @@ public class BuchungszeilenEditor extends JDialog {
 
 
     private JPanel createButtonPanel_Kategorie() {
+
         buttonPanel = new JPanel();
+
         if (AmoStyle.isGuiTestMode()) {
 
             buttonPanel.setBackground(Color.red);
@@ -236,33 +238,33 @@ public class BuchungszeilenEditor extends JDialog {
         JLabel label = new JLabel();
         buttonPanel.add(label);
 
-        kategorieSaveButton = new JButton("Kategorie übernehmen");
-        kategorieSaveButton.setDefaultCapable(true);
-        kategorieSaveButton.addActionListener(buchungszeilenEditorActionListener);
-        kategorieSaveButton.setSelected(true);
-
-
-/*        //Code, um mit Enter-Taste Button "zu aktivieren":
-        KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
-        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "Enter");
-        getRootPane().getActionMap().put("Enter", new AbstractAction()
-        {
-            private static final long serialVersionUID = 1L;
+        AbstractAction kategorieSaveAction = new AbstractAction("Kategorie übernehmen", null) {
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                //Button aktivieren:
-                //kategorieSaveButton.setEnabled(true);
+            public void actionPerformed(ActionEvent e) {
+                String selectetKategorie = kategorie.getText();
+                String kategorie = Kategoriefacade.get().getKategorieFromComboboxString(selectetKategorie);
+                for (int i = 0; i < buchungszeilen.length; i++) {
+                    Buchungszeile buchungszeile = buchungszeilen[i];
+                    buchungszeile.kategorie = kategorie;
+                    buchungszeile.kommentar = kommentar.getText();
+                }
 
-                //oder
+                moneyController.getMoneyTr().setIsSaved(false);
 
-                //Button fokusieren:
-                kategorieSaveButton.requestFocusInWindow();
+                dispose();
             }
-        });
-*/
+        };
 
+        JButton kategorieSaveButton = new JButton();
+        kategorieSaveButton.setDefaultCapable(true);
+        kategorieSaveButton.setSelected(true);
+        kategorieSaveButton.setAction(kategorieSaveAction);
+
+        //Code, um mit Enter-Taste das Saven zu aktivieren":
+        KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "Enter");
+        getRootPane().getActionMap().put("Enter", kategorieSaveAction);
 
         buttonPanel.add(kategorieSaveButton);
         return buttonPanel;
@@ -310,13 +312,6 @@ public class BuchungszeilenEditor extends JDialog {
         return buttonPanel;
     }
 
-    private JButton createCancelButton() {
-        cancelButton = new JButton("Abbrechen");
-        cancelButton.addActionListener(buchungszeilenEditorActionListener);
-        return cancelButton;
-    }
-
-
     class BuchungszeilenEditorActionListener implements java.awt.event.ActionListener {
 
         BuchungszeilenEditor editor;
@@ -346,20 +341,6 @@ public class BuchungszeilenEditor extends JDialog {
                     buchungszeilen[0].pbetrag = editor.pbetrag.getIntValue();
 
                     moneyController.getMoneyTr().recalculate();
-                    moneyController.getMoneyTr().setIsSaved(false);
-
-                    dispose();
-                }
-
-                if (actionEvent.getSource() == kategorieSaveButton) {
-                    String selectetKategorie = kategorie.getText();
-                    String kategorie = Kategoriefacade.get().getKategorieFromComboboxString(selectetKategorie);
-                    for (int i = 0; i < buchungszeilen.length; i++) {
-                        Buchungszeile buchungszeile = buchungszeilen[i];
-                        buchungszeile.kategorie = kategorie;
-                        buchungszeile.kommentar =editor.kommentar.getText();
-                    }
-
                     moneyController.getMoneyTr().setIsSaved(false);
 
                     dispose();
