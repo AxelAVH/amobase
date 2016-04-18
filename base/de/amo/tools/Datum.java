@@ -228,4 +228,16 @@ public class Datum {
 
         return null;                                                      // ein undefiniertes Datum entspricht null in interner Repräsentation
     }
+
+
+    public static void main(String args[]) {
+
+
+        String start = IOTools.input(     "Startdatum: (JJJJMMTT) : ");
+
+        int anzahlTage = IOTools.inputInt("Anzahl Tage            : ",-10000,10000);
+
+        IOTools.println(                  "Neues Datum            : " + Datum.forward(start, anzahlTage));
+
+    }
 }
