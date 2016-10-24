@@ -35,8 +35,11 @@ public class Buchungszeile implements Cloneable {
     public String kategorie         = "";
 
     public String getUniquenessKey() {
-        String s   = "                    " + betrag;
-        String key = datum + "~" + s.substring(s.length() - 20) + "~" + quelleZiel.trim() + "~" + verwendungszweck.trim();
+        String s = "                    " + betrag;
+        s = s.substring(s.length() - 20);
+        String t = "                    " + saldo;
+        t = t.substring(t.length() - 20);
+        String key = datum + "~" + s + "~" + t + "~" + quelleZiel.trim() + "~" + verwendungszweck.trim();
 
         if (isUmbuchung()) {    // Umbuchungssätze tauchen nur in der database-Datei auf, müssen nicht zwischen Buchungssätzen und Databasezeilen gemerged werden
             key = hauptbuchungsNr + "~" + umbuchungNr + "~" + key;
