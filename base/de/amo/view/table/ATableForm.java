@@ -137,7 +137,9 @@ public class ATableForm extends JPanel {
                 int row = evt.getFirstRow();
                 System.out.println("row: " + row + " column: " + column);
                 table.setColumnSelectionInterval(column + 1, column + 1);
-                table.setRowSelectionInterval(row, row);
+                if ((row) < table.getRowCount()) {
+                    table.setRowSelectionInterval(row, row);
+                }
             }
         }
     }
