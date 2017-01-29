@@ -34,6 +34,8 @@ public class Buchungszeile implements Cloneable {
     public String kommentar         = "";
     public String kategorie         = "";
 
+    public boolean isAllerersterSatz  = false;
+
     public String getUniquenessKey() {
         String s = "                    " + betrag;
         s = s.substring(s.length() - 20);
@@ -313,13 +315,16 @@ public class Buchungszeile implements Cloneable {
         return satzNrErwartet;
     }
 
-    public static void readIngDibaFile(File file, SortedMap<String, Buchungszeile> map) throws Exception {
+    /**
+     * @return liefert die Buchungszeile für die letzte eingelesene Datei-Zeile zurück (was chronologisch die erste Buchung ist (bei ING-DIBA)
+     */
+    public static Buchungszeile readIngDibaFile(File file, SortedMap<String, Buchungszeile> map) throws Exception {
 
-        InputStreamReader reader = new InputStreamReader(new FileInputStream(file),"windows-1252");
-        BufferedReader br = new BufferedReader(reader);
-
-        String zeile = null;
-        boolean startFound = false;
+        InputStreamReader reader            = new InputStreamReader(new FileInputStream(file),"windows-1252");
+        BufferedReader br                   = new BufferedReader(reader);
+        Buchungszeile  buchungszeileLast    = null;
+        String          zeile               = null;
+        boolean         startFound          = false;
 
         while ((zeile = br.readLine()) != null) {
             if (zeile.startsWith("\"Buchung\"")) {
@@ -333,6 +338,7 @@ public class Buchungszeile implements Cloneable {
             }
 
             Buchungszeile b = Buchungszeile.fromIngDibaZeile(zeile);
+            buchungszeileLast =b;
             System.out.println(zeile);
             if (!map.containsKey(b.getUniquenessKey())) {   // durch den Umsatz-Datensatz wird eine bereits bestehende Zeile NICHT überschieben
                 //System.out.println("KEY: " + b.getUniquenessKey());
@@ -342,36 +348,7 @@ public class Buchungszeile implements Cloneable {
         br.close();
         reader.close();
 
-
-/*
-        BufferedReader openInputFile = IOTools.createOpenInputFile(file.getAbsolutePath());
-
-        boolean startFound = false;
-        while (true) {
-            String zeile = IOTools.readFile(openInputFile);
-            if (zeile == null) {
-                break;
-            }
-            if (zeile.startsWith("\"Buchung\"")) {
-                startFound = true;
-                // todo: weitere Spalten absichern bzgl. der Erwartung
-                continue;
-            }
-
-            if (!startFound) {
-                continue;
-            }
-
-            Buchungszeile b = Buchungszeile.fromIngDibaZeile(zeile);
-            System.out.println(zeile);
-            if (!map.containsKey(b.getUniquenessKey())) {   // durch den Umsatz-Datensatz wird eine bereits bestehende Zeile NICHT überschieben
-                System.out.println("KEY: "+b.getUniquenessKey());
-                map.put(b.getUniquenessKey(), b);
-            }
-        }
-
-        openInputFile.close();
-        */
+        return buchungszeileLast;
     }
 
 
