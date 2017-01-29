@@ -57,9 +57,20 @@ public class MoneyDatabase {
             File file = files[i];
             String name = file.getName().toLowerCase();
             if (name.startsWith("umsatzanzeige") && file.getName().endsWith(".csv")) {
+
+
+                if (datensaetzeVorher == 0 && verarbeiteteFiles.size() > 0) {
+                    throw new RuntimeException("Beim Einlesen der ersten Buchungssätze einer Datenbank darf nur eine Datei vorgelegt werden.");
+                }
+
                 System.out.println("  Lese Datei " + file.getName());
                 try {
-                    Buchungszeile.readIngDibaFile(file, moneyTr.getBuchungszeilen());
+                    // die letzte in der Datei übermittelte Zeile ist in der Buchungsreihenfolge die Erste
+                    Buchungszeile buchungszeileFirst = Buchungszeile.readIngDibaFile(file, moneyTr.getBuchungszeilen());
+
+                    if (datensaetzeVorher == 0) {
+                        buchungszeileFirst.isAllerersterSatz = true;
+                    }
                     verarbeiteteFiles.add(file);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -87,16 +98,23 @@ public class MoneyDatabase {
         File f = getDatabaseFile();
         moneyTr.getBuchungszeilen().clear();
 
-        try {
-            Buchungszeile.readDatabaseFile(f.getAbsolutePath(), moneyTr.getBuchungszeilen());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (f.exists()) {
+            try {
+                Buchungszeile.readDatabaseFile(f.getAbsolutePath(), moneyTr.getBuchungszeilen());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            moneyTr.getEingelesesUmsatzDateien().clear();
+            moneyTr.recalculate();
+            moneyTr.setIsSaved(true);
+            moneyTr.setLastBackupDatabaseFile(null);
+            return "Datenbank eingelesen ";
+        } else {
+            moneyTr.getEingelesesUmsatzDateien().clear();
+            moneyTr.setIsSaved(true);
+            moneyTr.setLastBackupDatabaseFile(null);
+            return "Keine Datenbank eingelesen ";
         }
-        moneyTr.getEingelesesUmsatzDateien().clear();
-        moneyTr.recalculate();
-        moneyTr.setIsSaved(true);
-        moneyTr.setLastBackupDatabaseFile(null);
-        return "Datenbank eingelesen ";
     }
 
     public String saveDatabase(MoneyTransient moneyTr) {
