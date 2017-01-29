@@ -59,8 +59,24 @@ public class Reportgenerator {
         for (Buchungszeile buchungszeile : buchungszeilen) {
 
             String datum = buchungszeile.datum;
-            String jahr = datum.substring (0, 4);
 
+            if (buchungszeile.kommentar.contains("$Minus1Tag$")) {
+                datum = Datum.forward(datum,-1);
+            }
+            if (buchungszeile.kommentar.contains("$Minus2Tag$")) {
+                datum = Datum.forward(datum,-2);
+            }
+            if (buchungszeile.kommentar.contains("$Minus3Tag$")) {
+                datum = Datum.forward(datum,-3);
+            }
+            if (buchungszeile.kommentar.contains("$Minus4Tag$")) {
+                datum = Datum.forward(datum,-4);
+            }
+
+
+
+            String jahr = datum.substring (0, 4);
+/*
             if (buchungszeile.kommentar.contains("$Vorjahr$")) {
                 datum = datum.substring(0,4);
                 int datumI = Integer.parseInt(datum);
@@ -68,7 +84,7 @@ public class Reportgenerator {
                 datum = "" + datumI;
                 jahr = datum;
             }
-
+            */
             // der heutige (angebrochene) Monat wird nicht betrachtet
             // ( Wenn Datum vorgezogen wurde, kann es nicht mehr im aktuellen Monat liegen)
             if (datum.startsWith(heuteMonat)) {
