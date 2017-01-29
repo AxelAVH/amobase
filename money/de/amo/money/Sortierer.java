@@ -75,6 +75,14 @@ public class Sortierer {
             }
         }
 
+
+        for (Buchungszeile buchungszeile : potentielleNachfolger) {
+            if (buchungszeile.isAllerersterSatz) {
+                lastSaldo = buchungszeile.saldo - buchungszeile.betrag;
+                buchungszeile.isAllerersterSatz = false;
+            }
+        }
+
         for (Buchungszeile buchungszeile : potentielleNachfolger) {
             if (lastSaldo + buchungszeile.betrag == buchungszeile.saldo) {
                 potentielleNachfolger.remove(buchungszeile);
