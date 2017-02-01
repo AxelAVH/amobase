@@ -110,8 +110,8 @@ public class Reportgenerator {
                 int2 = new Integer(0);
             }
 
-            int1 += buchungszeile.pbetrag;
-            int2 += buchungszeile.pbetrag;
+            int1 += buchungszeile.betrag;
+            int2 += buchungszeile.betrag;
             jahresSumme.put(jahrUndKatFein, int1);
             jahresSumme.put(jahrUndKatGrob, int2);
         }
