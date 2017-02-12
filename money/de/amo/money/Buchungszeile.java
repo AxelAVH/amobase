@@ -304,9 +304,13 @@ public class Buchungszeile implements Cloneable {
 
         String zeile;
         int satzNrErwartet = 0;
-
+        boolean isFirst = true;
         while ((zeile = br.readLine()) != null) {
             Buchungszeile b = Buchungszeile.fromDatabaseZeile(zeile);
+            if (isFirst) {
+                isFirst             = false;
+                b.isAllerersterSatz = true;
+            }
             map.put(b.getUniquenessKey(), b); // durch den Database-Datensatz wird eine bereits bestehende Zeile überschieben
         }
 
@@ -315,46 +319,46 @@ public class Buchungszeile implements Cloneable {
         return satzNrErwartet;
     }
 
-    /**
-     * @return liefert die Buchungszeile für die letzte eingelesene Datei-Zeile zurück (was chronologisch die erste Buchung ist (bei ING-DIBA)
-     */
-    public static Buchungszeile readIngDibaFile(File file, SortedMap<String, Buchungszeile> map) throws Exception {
+//    /**
+//     * @return liefert die Buchungszeile für die letzte eingelesene Datei-Zeile zurück (was chronologisch die erste Buchung ist (bei ING-DIBA)
+//     */
+//    public static Buchungszeile readIngDibaFile(File file, SortedMap<String, Buchungszeile> map) throws Exception {
+//
+//        InputStreamReader reader            = new InputStreamReader(new FileInputStream(file),"windows-1252");
+//        BufferedReader br                   = new BufferedReader(reader);
+//        Buchungszeile  buchungszeileLast    = null;
+//        String          zeile               = null;
+//        boolean         startFound          = false;
+//
+//        while ((zeile = br.readLine()) != null) {
+//            if (zeile.startsWith("\"Buchung\"")) {
+//                startFound = true;
+//                // todo: weitere Spalten absichern bzgl. der Erwartung
+//                continue;
+//            }
+//
+//            if (!startFound) {
+//                continue;
+//            }
+//
+//            Buchungszeile b = Buchungszeile.fromIngDibaZeile(zeile);
+//            buchungszeileLast =b;
+//            System.out.println(zeile);
+//            if (!map.containsKey(b.getUniquenessKey())) {   // durch den Umsatz-Datensatz wird eine bereits bestehende Zeile NICHT überschieben
+//                //System.out.println("KEY: " + b.getUniquenessKey());
+//                map.put(b.getUniquenessKey(), b);
+//            }
+//        }
+//        br.close();
+//        reader.close();
+//
+//        return buchungszeileLast;
+//    }
+//
 
-        InputStreamReader reader            = new InputStreamReader(new FileInputStream(file),"windows-1252");
-        BufferedReader br                   = new BufferedReader(reader);
-        Buchungszeile  buchungszeileLast    = null;
-        String          zeile               = null;
-        boolean         startFound          = false;
+    public static void writeDatabaseFile(File file, List<Buchungszeile> zeilen) throws Exception {
 
-        while ((zeile = br.readLine()) != null) {
-            if (zeile.startsWith("\"Buchung\"")) {
-                startFound = true;
-                // todo: weitere Spalten absichern bzgl. der Erwartung
-                continue;
-            }
-
-            if (!startFound) {
-                continue;
-            }
-
-            Buchungszeile b = Buchungszeile.fromIngDibaZeile(zeile);
-            buchungszeileLast =b;
-            System.out.println(zeile);
-            if (!map.containsKey(b.getUniquenessKey())) {   // durch den Umsatz-Datensatz wird eine bereits bestehende Zeile NICHT überschieben
-                //System.out.println("KEY: " + b.getUniquenessKey());
-                map.put(b.getUniquenessKey(), b);
-            }
-        }
-        br.close();
-        reader.close();
-
-        return buchungszeileLast;
-    }
-
-
-    public static void writeDatabaseFile(String filename, List<Buchungszeile> zeilen) throws Exception {
-
-        Writer w = new OutputStreamWriter(new FileOutputStream(filename), "windows-1252");
+        Writer w = new OutputStreamWriter(new FileOutputStream(file), "windows-1252");
         BufferedWriter out = new BufferedWriter(w);
 
 //        PrintWriter printWriter = IOTools.openOutputFile(filename);

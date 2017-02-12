@@ -34,6 +34,11 @@ public class UmsatzReader_INGDIBA {
             if (zeile.startsWith(kontoZeilenAnfang)) {
                 kontonummerTmp = zeile.substring(kontoZeilenAnfang.length());
                 kontonummerTmp = kontonummerTmp.replace("\"","");
+
+                if ("Girokonto: 5407433753".equals(kontonummerTmp)) {   // IngDIBA hat nach Einführung der SEPA-Nummern die Darstellung verändert
+                    kontonummerTmp = "DE77500105175407433753";
+                }
+
                 break;
             }
         }
@@ -60,6 +65,10 @@ public class UmsatzReader_INGDIBA {
 
                 String kontonummerTmp = zeile.substring(kontoZeilenAnfang.length());
                 kontonummerTmp = kontonummerTmp.replace("\"","");
+
+                if ("Girokonto: 5407433753".equals(kontonummerTmp)) {   // IngDIBA hat nach Einführung der SEPA-Nummern die Darstellung verändert
+                    kontonummerTmp = "DE77500105175407433753";
+                }
 
                 if (moneyTransient.getKontonnr() == null || moneyTransient.getKontonnr().equals("")) {
                     moneyTransient.setKontonnr(kontonummerTmp);

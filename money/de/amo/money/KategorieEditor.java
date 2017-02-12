@@ -8,7 +8,6 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.prefs.BackingStoreException;
 
 /**
  * Created by private on 16.01.2016.
@@ -20,14 +19,14 @@ public class KategorieEditor {
     JButton abortButton;
     JTable  kategorienTable;
 
-    MoneyView moneyView;
+    // hier sollen sich die lfd. Ausgaben hindurch scrollen
+    private  JTextArea          messageTextArea;
 
     KategorieTableModel tableModel;
 
-    public JPanel createEditorPanel(MoneyView moneyView) {
+    public JPanel createEditorPanel(JTextArea messageTextArea) {
 
-        this.moneyView = moneyView;
-
+        this.messageTextArea = messageTextArea;
         JPanel main = new JPanel();
 
         main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
@@ -68,7 +67,7 @@ public class KategorieEditor {
             try {
 
                 if (actionEvent.getSource() == saveButton) {
-                    moneyView.addMessage("Speichern Event erhalten");
+                    addMessage("Speichern Event erhalten");
 
                     Kategoriefacade.get().getKategorien().clear();
                     Kategoriefacade.get().getKategorien().addAll(tableModel.getDataVector());
@@ -81,7 +80,7 @@ public class KategorieEditor {
                 }
 
                 if (actionEvent.getSource() == abortButton) {
-                    moneyView.addMessage("Abbrechen Event erhalten");
+                    addMessage("Abbrechen Event erhalten");
                     tableModel.getDataVector().clear();
                     tableModel.getDataVector().addAll(Kategoriefacade.get().getKategorien());
                     tableModel.fireTableDataChanged();
@@ -111,4 +110,11 @@ public class KategorieEditor {
 
         return tablePanel;
     }
+
+    public void addMessage(String msg) {
+        messageTextArea.append("\n"+msg);
+        messageTextArea.repaint();
+        messageTextArea.setCaretPosition(messageTextArea.getDocument().getLength());
+    }
+
 }

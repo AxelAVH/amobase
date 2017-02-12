@@ -1,5 +1,6 @@
 package de.amo.money;
 
+import de.amo.tools.Environment;
 import de.amo.tools.FileHandler;
 
 import javax.swing.*;
@@ -33,7 +34,7 @@ public class Money {
             File database = new File("C:\\Users\\private\\IdeaProjects\\Money\\test\\database.csv");
             FileHandler.copyTo(database, new File(testDir, "database.csv"));
 
-            Money.main2(new String[]{"kontodir=" + kontoDir});
+            Money.main2(new String[]{"moneyDir=" + kontoDir});
 
         } else {
 
@@ -47,15 +48,17 @@ public class Money {
 
         String kontodir = null;
 
+        File umsatzdateienDownloadDir = Environment.getOS_DownloadDir();
+
         for (int i = 0; i < args.length; i++) {
             int pos = args[i].indexOf("=");
             if (pos < 1) {
                 continue;
             }
-            String key = args[i].substring(0, pos);
-
-            if (key.toLowerCase().equals("kontodir") && args[i].length() > (pos + 1)) {
-                kontodir = args[i].substring(pos + 1);
+            String key   = args[i].substring(0, pos);
+            String value = args[i].substring(pos + 1);
+            if (key.toLowerCase().equals("moneydir") && args[i].length() > (pos + 1)) {
+                kontodir = value;
                 File f = new File(kontodir);
                 if (!f.exists()) {
                     System.out.println("<" + kontodir + "> ist kein gueltiges Verzeichnis.");
@@ -66,10 +69,13 @@ public class Money {
                     System.exit(0);
                 }
             }
+            if (key.toLowerCase().equals("downloaddir")) {
+                umsatzdateienDownloadDir = new File(value);
+            }
         }
 
         if (kontodir == null) {
-            System.out.println("Parameter 'kontodir' ist anzugeben!");
+            System.out.println("Parameter 'moneyDir' ist anzugeben!");
             System.exit(0);
         }
 
@@ -80,19 +86,23 @@ public class Money {
             System.exit(0);
         }
 
-        MoneyTransient  moneyTr             = new MoneyTransient();
-        MoneyDatabase   moneyDatabase       = new MoneyDatabase (kontodir);
-        MoneyController moneyController     = new MoneyController(moneyTr, moneyDatabase);
-        MoneyView       moneyView           = new MoneyView(moneyController);
+//        MoneyTransient  moneyTr             = new MoneyTransient (umsatzdateienDownloadDir);
+//        MoneyDatabase   moneyDatabase       = new MoneyDatabase  (moneyDir);
+//        MoneyController moneyController     = new MoneyController(moneyTr, moneyDatabase);
 
-        moneyController.moneyView = moneyView;
 
-        moneyDatabase.loadDatabase(moneyTr);
+//        MoneyView       moneyView           = new MoneyView      (moneyController);
+//
+//        moneyController.moneyView = moneyView;
 
-        moneyController.createForecast();
+        MoneyMultiView  moneyMultiView      = new MoneyMultiView(umsatzdateienDownloadDir, kontodir);
 
-        moneyTr.recalculate();
-        moneyView.updateGui();
+
+//        moneyDatabase.loadDatabase(moneyTr);
+//
+//
+//        moneyTr.recalculate();
+//        moneyView.updateGui();
 
     }
 

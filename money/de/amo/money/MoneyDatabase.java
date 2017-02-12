@@ -1,27 +1,34 @@
 package de.amo.money;
 
+import javax.swing.*;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.SortedMap;
 
 /**
  * Created by private on 11.10.2015.
  */
 public class MoneyDatabase {
 
-    String kontodir;
+    private File      kontodir;
+    private JTextArea messageTextArea;
 
-    public MoneyDatabase(String kontodir) {
-        this.kontodir = kontodir;
+    public MoneyDatabase(File kontodir, JTextArea   messageTextArea) {
+        this.kontodir        = kontodir;
+        this.messageTextArea = messageTextArea;
     }
 
     public String getKontodir() {
-        return kontodir;
+        return kontodir.getAbsolutePath();
     }
 
-    public File getBackupDir() {
-        File bdir = new File(new File(kontodir),"backup");
+    private File getBackupDir() {
+        File bdir = new File(kontodir,"backup");
         if (!bdir.exists()) {
             bdir.mkdir();
         }
@@ -29,7 +36,7 @@ public class MoneyDatabase {
     }
 
     public File getArchivDir() {
-        File adir = new File(new File(kontodir),"archiv");
+        File adir = new File(kontodir,"archiv");
         if (!adir.exists()) {
             adir.mkdir();
         }
@@ -37,22 +44,16 @@ public class MoneyDatabase {
     }
 
     public File getDatabaseFile() {
-        File f = new File(kontodir);
-        f = new File(f, "database.csv");
-        return f;
+        return new File(kontodir, "database.csv");
     }
 
 
-
-
-    public String umsatzDateienEinlesen(MoneyTransient moneyTr) {
+    public void umsatzDateienEinlesen(MoneyTransient moneyTr, File[] files) {
 
         int datensaetzeVorher = moneyTr.getBuchungszeilen().size();
 
         List<File> verarbeiteteFiles = new ArrayList<>();
 
-        File dir = moneyTr.umsatzdateienDownloadDir;
-        File[] files = dir.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
             String name = file.getName().toLowerCase();
@@ -63,18 +64,19 @@ public class MoneyDatabase {
                     throw new RuntimeException("Beim Einlesen der ersten Buchungssätze einer Datenbank darf nur eine Datei vorgelegt werden.");
                 }
 
-                System.out.println("  Lese Datei " + file.getName());
+                addMessage(moneyTr.getKontonnr() + " : Lese Datei " + file.getName());
                 try {
                     // die letzte in der Datei übermittelte Zeile ist in der Buchungsreihenfolge die Erste
-                    Buchungszeile buchungszeileFirst = Buchungszeile.readIngDibaFile(file, moneyTr.getBuchungszeilen());
+//                    Buchungszeile buchungszeileFirst = readIngDibaFile(file, moneyTr);
+                    Buchungszeile buchungszeileFirst = new UmsatzReader_INGDIBA(moneyTr).readIngDibaFile(file);
 
                     if (datensaetzeVorher == 0) {
                         buchungszeileFirst.isAllerersterSatz = true;
                     }
                     verarbeiteteFiles.add(file);
                 } catch (Exception e) {
+                    addMessage("Abbruch: " + e);
                     e.printStackTrace();
-                    return e.getMessage();
                 }
             }
         }
@@ -89,11 +91,11 @@ public class MoneyDatabase {
             moneyTr.setIsSaved(false);
         }
 
-        return "Bank-Dateien eingelesen.";
+        addMessage(moneyTr.getKontonnr() + " : Bank-Dateien eingelesen.");
     }
 
 
-    public String loadDatabase(MoneyTransient moneyTr) {
+    public void loadDatabase(MoneyTransient moneyTr) {
 
         File f = getDatabaseFile();
         moneyTr.getBuchungszeilen().clear();
@@ -108,12 +110,12 @@ public class MoneyDatabase {
             moneyTr.recalculate();
             moneyTr.setIsSaved(true);
             moneyTr.setLastBackupDatabaseFile(null);
-            return "Datenbank eingelesen ";
+            addMessage(moneyTr.getKontonnr() + " : Datenbank eingelesen ");
         } else {
             moneyTr.getEingelesesUmsatzDateien().clear();
             moneyTr.setIsSaved(true);
             moneyTr.setLastBackupDatabaseFile(null);
-            return "Keine Datenbank eingelesen ";
+            addMessage(moneyTr.getKontonnr() + " : Keine Datenbank eingelesen ");
         }
     }
 
@@ -128,9 +130,13 @@ public class MoneyDatabase {
             if (b) {
                 moneyTr.setLastBackupDatabaseFile(backupDatabase);
             }
+        } else {
+            if (!f.getParentFile().exists()) {
+                f.getParentFile().mkdirs();
+            }
         }
         try {
-            Buchungszeile.writeDatabaseFile(f.getAbsolutePath(), moneyTr.getAktuelleDaten());
+            Buchungszeile.writeDatabaseFile(f, moneyTr.getAktuelleDaten());
 
             List<File> eingelesesUmsatzDateien = moneyTr.getEingelesesUmsatzDateien();
             for (File file : eingelesesUmsatzDateien) {
@@ -152,6 +158,11 @@ public class MoneyDatabase {
         return "Gespeichert und Backup der Vorgängerversion erzeugt.";
     }
 
+    public void addMessage(String msg) {
+        messageTextArea.append("\n"+msg);
+        messageTextArea.repaint();
+        messageTextArea.setCaretPosition(messageTextArea.getDocument().getLength());
+    }
 
 
 }

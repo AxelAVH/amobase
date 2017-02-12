@@ -18,23 +18,26 @@ public class MoneyTransient {
     int     psaldo  = 0;
     String  message = "";
     boolean isSaved = true;
+    String  kontonnr = "";
 
-    int pToNullBetrag = 0;  // Was m�sste �berwiesen werden, damit der pSaldo auf 0 geht?
-    int forecastSumme = 0;
+//    int pToNullBetrag = 0;  // Was m�sste �berwiesen werden, damit der pSaldo auf 0 geht?
+//    int forecastSumme = 0;
 
     String monatsAbgrenzDatum        = null;
-    int    pSaldoMonatsanfang        = 0;
-    int    pToNullBetragMonatsanfang = 0;
+//    int    pSaldoMonatsanfang        = 0;
+//    int    pToNullBetragMonatsanfang = 0;
 
     File lastBackupDatabaseFile;
 
     SortedMap<String, Buchungszeile>    buchungszeilen          = new TreeMap<String, Buchungszeile>();
     List<Buchungszeile>                 sortierteBuchungszeilen = new ArrayList<Buchungszeile>();
 
-    File umsatzdateienDownloadDir       = Environment.getOS_DownloadDir();
+    File umsatzdateienDownloadDir;
 
-
-    List<Buchungszeile> forecast = new ArrayList<Buchungszeile>();
+    public MoneyTransient(String kontonummer, File umsatzdateienDownloadDir) {
+        this.umsatzdateienDownloadDir =  umsatzdateienDownloadDir;
+        this.kontonnr                   = kontonummer;
+    }
 
     List<File> eingelesesUmsatzDateien = new ArrayList<File>();
 
@@ -44,30 +47,6 @@ public class MoneyTransient {
 
     public int getPsaldo() {
         return psaldo;
-    }
-
-    public int getpToNullBetrag() {
-        return pToNullBetrag;
-    }
-
-    public int getForecastSumme() {
-        return forecastSumme;
-    }
-
-    public void setForecastSumme(int forecastSumme) {
-        this.forecastSumme = forecastSumme;
-    }
-
-    public String getMonatsAbgrenzDatum() {
-        return monatsAbgrenzDatum;
-    }
-
-    public int getpSaldoMonatsanfang() {
-        return pSaldoMonatsanfang;
-    }
-
-    public int getpToNullBetragMonatsanfang() {
-        return pToNullBetragMonatsanfang;
     }
 
     public SortedMap<String, Buchungszeile> getBuchungszeilen() {
@@ -82,10 +61,6 @@ public class MoneyTransient {
         return sortierteBuchungszeilen;
     }
 
-    public List<Buchungszeile> getForecast() {
-        return forecast;
-    }
-
     public List<File> getEingelesesUmsatzDateien() {
         return eingelesesUmsatzDateien;
     }
@@ -98,18 +73,18 @@ public class MoneyTransient {
         this.isSaved = isSaved;
     }
 
-    public File getLastBackupDatabaseFile() {
-        return lastBackupDatabaseFile;
-    }
-
     public void setLastBackupDatabaseFile(File lastBackupDatabaseFile) {
         this.lastBackupDatabaseFile = lastBackupDatabaseFile;
     }
 
-
-    public File getUmsatzdateienDownloadDir() {
-        return umsatzdateienDownloadDir;
+    public String getKontonnr() {
+        return kontonnr;
     }
+
+    public void setKontonnr(String kontonnr) {
+        this.kontonnr = kontonnr;
+    }
+
 
     /** Berechnet die Salden anhand der aktuellen Buchungszeilen
      */
@@ -117,7 +92,7 @@ public class MoneyTransient {
 
         saldo  = 0;
         psaldo = 0;
-        pSaldoMonatsanfang = 0;
+//        pSaldoMonatsanfang = 0;
         message = "";
 
         monatsAbgrenzDatum = null;
@@ -132,15 +107,21 @@ public class MoneyTransient {
         sortierteBuchungszeilen = new Sortierer().sortiere(buchungszeilen);
 
         int lastHauptbuchungsnr = 0;
+        boolean isFirst = true;
 
         for (Buchungszeile buchungszeile : sortierteBuchungszeilen) {
-            saldo  += buchungszeile.betrag;
-            psaldo += buchungszeile.pbetrag;
-            buchungszeile.pSaldo = psaldo;
-
-            if (buchungszeile.datum.compareTo(monatsAbgrenzDatum) <= 0) {
-                pSaldoMonatsanfang += buchungszeile.pbetrag;
+            if (isFirst) {
+                isFirst = false;
+                saldo = buchungszeile.saldo;
+            } else {
+                saldo += buchungszeile.betrag;
             }
+//            psaldo += buchungszeile.pbetrag;
+//            buchungszeile.pSaldo = psaldo;
+
+//            if (buchungszeile.datum.compareTo(monatsAbgrenzDatum) <= 0) {
+//                pSaldoMonatsanfang += buchungszeile.pbetrag;
+//            }
 
             if (buchungszeile.hauptbuchungsNr > 0) {
                 lastHauptbuchungsnr = buchungszeile.hauptbuchungsNr;
@@ -151,9 +132,9 @@ public class MoneyTransient {
 
         }
 
-        pToNullBetrag             = -(psaldo + forecastSumme);
-
-        pToNullBetragMonatsanfang = -(pSaldoMonatsanfang + forecastSumme);
+//        pToNullBetrag             = -(psaldo + forecastSumme);
+//
+//        pToNullBetragMonatsanfang = -(pSaldoMonatsanfang + forecastSumme);
     }
 
     public void addUmbuchungszeilen(Buchungszeile pro, Buchungszeile contra) {
@@ -187,19 +168,19 @@ public class MoneyTransient {
         sortierteBuchungszeilen.add(lastIndex + 2, contra);
     }
 
-    public int ermittleAnzahlUmsatzdateienImDownload() {
-        int ret = 0;
-        File dir = getUmsatzdateienDownloadDir();
-        File[] files = dir.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            File file = files[i];
-            String name = file.getName().toLowerCase();
-            if (name.startsWith("umsatzanzeige") && file.getName().endsWith(".csv")) {
-                System.out.println("  Lese Datei " + file.getName());
-                ret++;
-            }
-        }
-        return ret;
-    }
-
+//    public int ermittleAnzahlUmsatzdateienImDownload() {
+//        int ret = 0;
+//        File dir = getUmsatzdateienDownloadDir();
+//        File[] files = dir.listFiles();
+//        for (int i = 0; i < files.length; i++) {
+//            File file = files[i];
+//            String name = file.getName().toLowerCase();
+//            if (name.startsWith("umsatzanzeige") && file.getName().endsWith(".csv")) {
+//                System.out.println("  Lese Datei " + file.getName());
+//                ret++;
+//            }
+//        }
+//        return ret;
+//    }
+//
 }

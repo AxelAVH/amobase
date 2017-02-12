@@ -39,83 +39,23 @@ public class MoneyController {
         return lastMessage;
     }
 
-    public void createForecast() {
-        List<Buchungszeile> forecast = moneyTr.getForecast();
-        forecast.clear();
-        int forecastSumme = 0;
 
-        Buchungszeile b;
-        b = new Buchungszeile();
-        b.datum = "00000000";
-        b.pbetrag = 0;
-        b.quelleZiel = "Axel ING-Diba";
-        b.verwendungszweck = "Gehalt dbh";
-        forecast.add(b);
-        forecastSumme += b.pbetrag;
-
-        b = new Buchungszeile();
-        b.datum = "00000000";
-        b.pbetrag = -5685;
-        b.quelleZiel = "MLP";
-        b.verwendungszweck = "Versicherung gross";
-        forecast.add(b);
-        addBuchungszeileInMessagePanel(b);
-        forecastSumme += b.pbetrag;
-
-        b = new Buchungszeile();
-        b.datum = "00000000";
-        b.pbetrag = -24187;
-        b.quelleZiel = "MLP";
-        b.verwendungszweck = "Versicherung klein";
-        forecast.add(b);
-        addBuchungszeileInMessagePanel(b);
-        forecastSumme += b.pbetrag;
-
-        b = new Buchungszeile();
-        b.datum = "00000000";
-        b.pbetrag = -50300;
-        b.quelleZiel = "Harry Schulz";
-        b.verwendungszweck = "Miete";
-        forecast.add(b);
-        addBuchungszeileInMessagePanel(b);
-        forecastSumme += b.pbetrag;
-
-        b = new Buchungszeile();
-        b.datum = "00000000";
-        b.pbetrag = -2500;
-        b.quelleZiel = "EON";
-        b.verwendungszweck = "Strom";
-        forecast.add(b);
-        addBuchungszeileInMessagePanel(b);
-        forecastSumme += b.pbetrag;
-
-        moneyTr.setForecastSumme(forecastSumme);
-
-        moneyView.addMessage("Forecast (Einbehalt für Monatsanfangszahlungen) : " + StringFormatter.getFloatStringFromIntString("" + forecastSumme));
-    }
-
-    private void addBuchungszeileInMessagePanel(Buchungszeile b) {
-        String floatStringFromIntString = StringFormatter.getFloatStringFromIntString("" + b.pbetrag);
-        while (floatStringFromIntString.length() < 10) {
-            floatStringFromIntString = " " + floatStringFromIntString;
-        }
-
-        moneyView.addMessage(b.quelleZiel + "\t" + b.verwendungszweck + "\t" + floatStringFromIntString);
-    }
+//    private void addBuchungszeileInMessagePanel(Buchungszeile b) {
+//        String floatStringFromIntString = StringFormatter.getFloatStringFromIntString("" + b.pbetrag);
+//        while (floatStringFromIntString.length() < 10) {
+//            floatStringFromIntString = " " + floatStringFromIntString;
+//        }
+//
+//        moneyView.addMessage(b.quelleZiel + "\t" + b.verwendungszweck + "\t" + floatStringFromIntString);
+//    }
 
     public boolean isSaved() {
         return moneyTr.isSaved();
     }
 
-    public void umsatzDateienEinlesen() {
-        lastMessage = moneyDatabase.umsatzDateienEinlesen(moneyTr);
-        moneyView.updateGui();
+    public MoneyView getMoneyView() {
+        return moneyView;
     }
-
-//    public void loadDatabase() {
-//        lastMessage =  moneyDatabase.loadDatabase(moneyTr);
-//        moneyView.updateGui();
-//    }
 
     public void saveDatabase() {
         lastMessage = moneyDatabase.saveDatabase(moneyTr);

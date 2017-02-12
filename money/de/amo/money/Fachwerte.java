@@ -41,8 +41,8 @@ public class Fachwerte {
         ret.add(getFachwert_Betrag());
         ret.add(getFachwert_Waehrung());
         ret.add(getFachwert_Saldo());
-        ret.add(getFachwert_PBetrag());
-        ret.add(getFachwert_PSaldo());
+//        ret.add(getFachwert_PBetrag());
+//        ret.add(getFachwert_PSaldo());
 
         return ret;
     }
@@ -107,9 +107,9 @@ public class Fachwerte {
         Fachwert fw = new FachwertString(VERWENDUNGSZWECK);
 
         fw.setColumName("Verwendungszweck");
-        fw.setPreferredWidth(200);
+        fw.setPreferredWidth(400);
         fw.setMinWidth(150);
-        fw.setMaxWidth(250);
+        fw.setMaxWidth(700);
         fw.setLabel30("Verwendungszweck");
 
         return fw;
@@ -120,9 +120,9 @@ public class Fachwerte {
         Fachwert fw = new FachwertString(QUELLEZIEL);
 
         fw.setColumName("Quelle/Ziel");
-        fw.setPreferredWidth(200);
+        fw.setPreferredWidth(300);
         fw.setMinWidth(150);
-        fw.setMaxWidth(250);
+        fw.setMaxWidth(500);
         fw.setLabel30("Quelle/Ziel");
 
         return fw;
@@ -135,7 +135,7 @@ public class Fachwerte {
         fw.setColumName("Kommentar");
         fw.setPreferredWidth(200);
         fw.setMinWidth(150);
-        fw.setMaxWidth(250);
+        fw.setMaxWidth(800);
         fw.setLabel30("Kommentar");
 
         return fw;

@@ -21,16 +21,9 @@ public class MoneyView extends JFrame {
     public  JPanel              summaryPanel;
 
     private ANumberInputField   saldoInput;
-    private ANumberInputField   psaldoInput;
-    private ANumberInputField   forecastInput;
-    private ANumberInputField   pSaldoAmInput;
-    private ANumberInputField   zahlungAmInput;
     private AStringInputField   datenbankNameInput;
-    private AStringInputField   umsatzDateienUploadDir;
-
-    private AFieldPane zahlungAmPane;
-    private AFieldPane psaldoAmPane;
-    private AFieldPane umsatzDateienUploadPane;
+    private AStringInputField   kontonummerInput;
+    private AFieldPane          kontonummerInputPane;
 
     public AStringInputField    summaryLabelDatenbankSaved;
 
@@ -39,7 +32,6 @@ public class MoneyView extends JFrame {
 
     // hier sollen sich die lfd. Ausgaben hindurch scrollen
     private  JTextArea          messageTextArea;
-
 
     AStringInputField filter_kategorie;
     AStringInputField filter_kommentar;
@@ -55,16 +47,18 @@ public class MoneyView extends JFrame {
 
     private BuchungszeilenTableModel model;
 
-    JButton saveButton, bankDatenEinlesenButton, viewRefreshButton, resetFilterButton, auswertungsButton;
+    JButton saveButton, viewRefreshButton, resetFilterButton, auswertungsButton;
 
     JTabbedPane tabbedPane;
 
     private MoneyController     moneyController;
 
 
-    public MoneyView( MoneyController moneyController) {
+    public MoneyView( MoneyController moneyController, JTextArea  messageTextArea) {
 
         setTitle("Money - Umsatzverwaltung für ein Bankkonto");
+
+        this.messageTextArea = messageTextArea;
 
         tabbedPane = new JTabbedPane();
 
@@ -87,16 +81,11 @@ public class MoneyView extends JFrame {
 
         this.moneyController = moneyController;
 
-        addWindowListener(new MyWindowListener());
-
         tabbedPane.add("Umsätze",mainPanel);
-        tabbedPane.add("Nachrichten", createMessagePanel());
 
-        tabbedPane.add("Kategorien", new KategorieEditor().createEditorPanel(this));
+//        tabbedPane.add("Kategorien", new KategorieEditor().createEditorPanel(this));
         setContentPane(tabbedPane);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        pack();
-        setVisible(true);
     }
 
     public JPanel createTablePanel(BuchungszeilenTableModel model) {
@@ -196,7 +185,7 @@ public class MoneyView extends JFrame {
 
     private JPanel createSummaryPanel() {
         summaryPanel = new JPanel();
-        GridLayout mgr = new GridLayout(4, 2, 0, 0);
+        GridLayout mgr = new GridLayout(3, 2, 0, 0);
         summaryPanel.setLayout(mgr);
         summaryPanel.setBounds(0,0,600,300);
 
@@ -212,41 +201,23 @@ public class MoneyView extends JFrame {
         aFieldPane = new AFieldPane("Gesichert", summaryLabelDatenbankSaved, 20, 150, 50, 0);
         summaryPanel.add(aFieldPane);
 
+
+        kontonummerInput  = AStringInputField.create("");
+        kontonummerInput.setEditable(false);
+        kontonummerInputPane = new AFieldPane("Kontonummer", kontonummerInput, 20,150,300,20);
+        kontonummerInputPane.getTrailingLabel().setText("");
+        summaryPanel.add(kontonummerInputPane);
+
+//        umsatzDateienUploadDir = AStringInputField.create("");
+//        umsatzDateienUploadDir.setEditable(false);
+//        umsatzDateienUploadPane = new AFieldPane("Bankdaten Download", umsatzDateienUploadDir,20,150,400,20);
+//        summaryPanel.add(umsatzDateienUploadPane);
+
         saldoInput = ANumberInputField.create(0,2);
         saldoInput.setEditable(false);
         aFieldPane = new AFieldPane("Saldo", saldoInput, 20, 150, 100, 30);
         aFieldPane.getTrailingLabel().setText("EUR");
         summaryPanel.add(aFieldPane);
-
-        psaldoInput = ANumberInputField.create(0,2);
-        psaldoInput.setEditable(false);
-        aFieldPane = new AFieldPane("P-Saldo", psaldoInput, 20, 150, 100, 30);
-        aFieldPane.getTrailingLabel().setText("EUR");
-        summaryPanel.add(aFieldPane);
-
-        forecastInput = ANumberInputField.create(0,2);
-        forecastInput.setEditable(false);
-        aFieldPane = new AFieldPane("Forecast", forecastInput, 20, 150, 100, 30);
-        aFieldPane.getTrailingLabel().setText("EUR");
-        summaryPanel.add(aFieldPane);
-
-        pSaldoAmInput = ANumberInputField.create(0,2);
-        pSaldoAmInput.setEditable(false);
-        psaldoAmPane = new AFieldPane("P-Saldo am ", pSaldoAmInput, 20, 150, 100, 30);
-        psaldoAmPane.getTrailingLabel().setText("EUR");
-        summaryPanel.add(psaldoAmPane);
-
-        zahlungAmInput = ANumberInputField.create(0,2);
-        zahlungAmInput.setEditable(false);
-        zahlungAmPane = new AFieldPane("Zahlung am ", zahlungAmInput, 20, 150, 100, 30);
-        zahlungAmPane.getTrailingLabel().setText("EUR");
-        summaryPanel.add(zahlungAmPane);
-
-        umsatzDateienUploadDir = AStringInputField.create("");
-        umsatzDateienUploadDir.setEditable(false);
-        umsatzDateienUploadPane = new AFieldPane("Bankdaten Download", umsatzDateienUploadDir,20,150,400,20);
-        summaryPanel.add(umsatzDateienUploadPane);
-
 
         if (AmoStyle.isGuiTestMode()) {
 
@@ -278,14 +249,11 @@ public class MoneyView extends JFrame {
         buttonPanel.setPreferredSize(dimension);
 
         JPanel b0 = new JPanel();
-        JPanel b1 = new JPanel();
         JPanel b2 = new JPanel();
         b0.add(createAuswertungsButton());
-        b1.add(createBankDatenEinlesenButton());
         b2.add(createSaveButton());
 
         buttonPanel.add(b0);
-        buttonPanel.add(b1);
         buttonPanel.add(b2);
         buttonPanel.setVisible(true);
         return buttonPanel;
@@ -365,31 +333,6 @@ public class MoneyView extends JFrame {
         filter_datumVon.setValue(null);
     }
 
-    private JPanel createMessagePanel() {
-
-        JPanel messagePanel = new JPanel();
-        messagePanel.setLayout(new GridLayout(1,1));
-        if (AmoStyle.isGuiTestMode()) {
-            messagePanel.setBackground(Color.yellow);
-        }
-
-        Dimension dimension = new Dimension(300,100);
-        messagePanel.setSize(300, 100);
-        messagePanel.setPreferredSize(dimension);
-
-        messageTextArea = new JTextArea();
-        messageTextArea.setLineWrap(true);
-        messageTextArea.setWrapStyleWord(true);
-        messageTextArea.setAutoscrolls(true);
-        messageTextArea.setTabSize(20);
-
-        JScrollPane scrollPane = new JScrollPane(messageTextArea);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        messagePanel.add(scrollPane);
-
-        return messagePanel;
-    }
-
     private JButton createSaveButton() {
         saveButton = new JButton("Speichern der Datenbank");
         saveButton.setVisible(true);
@@ -411,36 +354,11 @@ public class MoneyView extends JFrame {
         return resetFilterButton;
     }
 
-    private JButton createBankDatenEinlesenButton() {
-        bankDatenEinlesenButton = new JButton("ING-DiBa-Dateien lesen");
-        bankDatenEinlesenButton.setVisible(true);
-        bankDatenEinlesenButton.addActionListener(actionListener);
-        return bankDatenEinlesenButton;
-    }
-
     private JButton createAuswertungsButton() {
         auswertungsButton = new JButton("Auswertung erzeugen");
         auswertungsButton.setVisible(true);
         auswertungsButton.addActionListener(actionListener);
         return auswertungsButton;
-    }
-
-
-    class MyWindowListener extends WindowAdapter{
-
-        @Override
-        public void windowClosing(WindowEvent e) {
-
-            if (moneyController.isSaved()) {
-                System.exit(0);
-            }
-
-            int result = JOptionPane.showConfirmDialog(mainPanel, "Noch ist nix gespeichert, wirklich schließen?", "Sicherheitsabfrage", JOptionPane.YES_NO_OPTION, 0);
-
-            if (result == 0) {
-                System.exit(0);
-            }
-        }
     }
 
     class MyActionListener implements java.awt.event.ActionListener {
@@ -453,11 +371,6 @@ public class MoneyView extends JFrame {
                     titel += "beim Speichern der Datenbank";
                     addMessage("Speichern Event erhalten");
                     moneyController.saveDatabase();
-                }
-                if (actionEvent.getSource() == bankDatenEinlesenButton) {
-                    titel += "beim Einlesen der Umsatzdateien";
-                    addMessage("Bank-Dateien-Einlesen Event erhalten");
-                    moneyController.umsatzDateienEinlesen();
                 }
                 if (actionEvent.getSource() == viewRefreshButton) {
                     titel += "beim Refresh der GUI";
@@ -548,19 +461,10 @@ public class MoneyView extends JFrame {
             letztesDatumSelected = buchungszeile.datum;
         }
 
-        String monatsAbgrenzDatum = moneyTr.getMonatsAbgrenzDatum();
-        String datum  = monatsAbgrenzDatum.substring(6,8) + "." + monatsAbgrenzDatum.substring(4,6) + "." + monatsAbgrenzDatum.substring(0,4);
-        zahlungAmPane.getLeadingLabel().setText("Zahlung am " + datum);
-        psaldoAmPane.getLeadingLabel().setText("P-Saldo am " + datum);
         saldoInput                  .setValue(moneyTr.getSaldo(),2);
-        psaldoInput                 .setValue(moneyTr.getPsaldo(),2);
-        pSaldoAmInput               .setValue(moneyTr.getpSaldoMonatsanfang(),2);
-        forecastInput               .setValue(moneyTr.getForecastSumme(),2);
-        zahlungAmInput              .setValue(moneyTr.getpToNullBetragMonatsanfang(),2);
         datenbankNameInput          .setValue(moneyController.getMoneyDatabase().getKontodir());
         summaryLabelDatenbankSaved  .setValue(moneyTr.isSaved() ? "Ja" : "Nein");
-        umsatzDateienUploadDir      .setValue(moneyTr.getUmsatzdateienDownloadDir().getAbsolutePath());
-        umsatzDateienUploadPane.getTrailingLabel().setText("("+moneyTr.ermittleAnzahlUmsatzdateienImDownload()+")");
+        kontonummerInput            .setValue(moneyTr.getKontonnr());
 
         erstesDatum             = erstesDatum.substring(6, 8) + "." + erstesDatum.substring(4, 6) + "." + erstesDatum.substring(0, 4);
         letztesDatum            = letztesDatum.substring(6, 8) + "." + letztesDatum.substring(4, 6) + "." + letztesDatum.substring(0, 4);
@@ -571,10 +475,7 @@ public class MoneyView extends JFrame {
         statusZeile.setText("Total " + aktuelleDaten.size() + " Buchungssätze von " + erstesDatum + " - " + letztesDatum + "  " + countHauptbuchungen + "/" + countUmbuchungen
         + "  |  selektierte Buchungssätze von " + erstesDatumSelected + " - " + letztesDatumSelected + "  " + countHauptbuchungenSelected + "/" + countUmbuchungenSelectected);
 
-
-
         addMessage(moneyController.getMessage());
-
 
         model.fireTableDataChanged();
     }
