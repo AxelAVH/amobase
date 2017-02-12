@@ -26,14 +26,24 @@ public class UmsatzReader_INGDIBA {
         InputStreamReader reader            = new InputStreamReader(new FileInputStream(file),"windows-1252");
         BufferedReader br                   = new BufferedReader(reader);
         String          zeile               = null;
-        String          kontoZeilenAnfang   = "\"Konto\";\"";
+        String          kontoZeilenAnfang1  = "\"Konto\";\"";
+        String          kontoZeilenAnfang2  = "Konto;";
         String          kontonummerTmp      = null;
 
         while ((zeile = br.readLine()) != null) {
 
-            if (zeile.startsWith(kontoZeilenAnfang)) {
-                kontonummerTmp = zeile.substring(kontoZeilenAnfang.length());
+            if (zeile.startsWith(kontoZeilenAnfang1)) {
+                kontonummerTmp = zeile.substring(kontoZeilenAnfang1.length());
                 kontonummerTmp = kontonummerTmp.replace("\"","");
+
+                if ("Girokonto: 5407433753".equals(kontonummerTmp)) {   // IngDIBA hat nach Einführung der SEPA-Nummern die Darstellung verändert
+                    kontonummerTmp = "DE77500105175407433753";
+                }
+
+                break;
+            }
+            if (zeile.startsWith(kontoZeilenAnfang2)) {
+                kontonummerTmp = zeile.substring(kontoZeilenAnfang2.length());
 
                 if ("Girokonto: 5407433753".equals(kontonummerTmp)) {   // IngDIBA hat nach Einführung der SEPA-Nummern die Darstellung verändert
                     kontonummerTmp = "DE77500105175407433753";
@@ -57,14 +67,21 @@ public class UmsatzReader_INGDIBA {
         Buchungszeile  buchungszeileLast    = null;
         String          zeile               = null;
         boolean         startFound          = false;
-        String          kontoZeilenAnfang   = "\"Konto\";\"";
+        String          kontoZeilenAnfang1   = "\"Konto\";\"";
+        String          kontoZeilenAnfang2   = "Konto;";
 
         while ((zeile = br.readLine()) != null) {
 
-            if (zeile.startsWith(kontoZeilenAnfang)) {
+            if (zeile.startsWith(kontoZeilenAnfang1) || zeile.startsWith(kontoZeilenAnfang2)) {
 
-                String kontonummerTmp = zeile.substring(kontoZeilenAnfang.length());
-                kontonummerTmp = kontonummerTmp.replace("\"","");
+                String kontonummerTmp;
+
+                if (zeile.startsWith(kontoZeilenAnfang1)) {
+                    kontonummerTmp = zeile.substring(kontoZeilenAnfang1.length());
+                    kontonummerTmp = kontonummerTmp.replace("\"", "");
+                } else {
+                    kontonummerTmp = zeile.substring(kontoZeilenAnfang2.length());
+                }
 
                 if ("Girokonto: 5407433753".equals(kontonummerTmp)) {   // IngDIBA hat nach Einführung der SEPA-Nummern die Darstellung verändert
                     kontonummerTmp = "DE77500105175407433753";
@@ -78,7 +95,7 @@ public class UmsatzReader_INGDIBA {
                     }
                 }
             }
-            if (zeile.startsWith("\"Buchung\"")) {
+            if (zeile.startsWith("\"Buchung\"") || zeile.startsWith("Buchung")) {
                 startFound = true;
                 // todo: weitere Spalten absichern bzgl. der Erwartung
                 continue;

@@ -412,6 +412,50 @@ public class Buchungszeile implements Cloneable {
     }
 
     public static String[] getColumns(String zeile) {
+
+        List<String> words = new ArrayList<>();
+
+        zeile +=";";
+
+        String word = "";
+        boolean tuettelMode = false;
+
+        for (int i = 0; i < zeile.length(); i++) {
+
+            char c = zeile.charAt(i);
+
+            if (';' == c) {
+                if (!tuettelMode) {
+                    word = word.trim();
+                    words.add(word);
+                    word = "";
+                    continue;
+                } else {
+
+                }
+
+            }
+
+            if (c == '\"') {
+                if (!tuettelMode) {
+                    tuettelMode = true;
+                    continue;
+                } else {
+                    tuettelMode = false;
+                    continue;
+                }
+            }
+
+            word += c;
+        }
+
+        return words.toArray(new String[0]);
+
+    }
+
+
+
+    public static String[] getColumnsAlt(String zeile) {
         if (!zeile.startsWith("\"") && !zeile.endsWith("\"")) {
             return new String[0];
         }
@@ -433,8 +477,28 @@ public class Buchungszeile implements Cloneable {
     }
 
     public static void main(String[] args) {
-        System.out.println(formatLongForEuroOutput(1));
-        System.out.println(formatLongForEuroOutput(11));
-        System.out.println(formatLongForEuroOutput(111));
+//        System.out.println(formatLongForEuroOutput(1));
+//        System.out.println(formatLongForEuroOutput(11));
+//        System.out.println(formatLongForEuroOutput(111));
+String s = "01.02.2017;01.02.2017;Susanne Moeller;Dauerauftrag/Terminueberweisung;\"Unterhalt: Tabea 481, Julius 481,  Leonard 430, Susanne 555, Florian  230, gemeinsame Verpflichtungen 5  \";-2.185,00;EUR;7.384,92;EUR";
+        System.out.println(s);
+        String[] columns = getColumns(s);
+        for (int i = 0; i < columns.length; i++) {
+            String column = columns[i];
+            System.out.println(column);
+        }
+
+
+        /*
+01.02.2017;01.02.2017;Dr. Axel Moeller;Lastschrifteinzug;"Sparen  ";-200,00;EUR;9.569,92;EUR
+01.02.2017;01.02.2017;Sylva Janiszewski;Überweisung;"Rechnung 2017/97, Mandant 63999  ";-381,04;EUR;9.769,92;EUR
+31.01.2017;31.01.2017;E.ON Energie Deutschland;Lastschrifteinzug;"VK 232003032058 Alte Dorfstr 38 Vie  rhoefen ABSCHLAG 01 Strom WIR SAGEN  DANKE  ";-31,00;EUR;10.150,96;EUR
+30.01.2017;
+30.01.2017;SUSANNE MOLLER;Gutschrift;"Ruckzahlung Autoversicherung Susi  ";75,30;EUR;10.181,96;EUR
+30.01.2017;30.01.2017;REWE 803 (895) See;Lastschrifteinzug;"REWE SAGT DANKE. 41400803//Seevetal  Maschen/DE
+         */
+
+
+
     }
 }
