@@ -31,6 +31,7 @@ public abstract class ATableModel extends AbstractTableModel {
     int[] minWidth;
     int[] preferredWidth;
     int[] maxWidth;
+    boolean[] isSummable;
 
     boolean editable;
 
@@ -44,6 +45,7 @@ public abstract class ATableModel extends AbstractTableModel {
         this.minWidth           = new int[fachwerte.size() + 1];
         this.preferredWidth     = new int[fachwerte.size() + 1];
         this.maxWidth           = new int[fachwerte.size() + 1];
+        this.isSummable         = new boolean[fachwerte.size() + 1];
 
         for (int i = 0; i < fachwerte.size(); i++) {
             Fachwert fachwert   = fachwerte.get(i);
@@ -55,6 +57,7 @@ public abstract class ATableModel extends AbstractTableModel {
             minWidth[i]         = fachwert.getMinWidth();
             maxWidth[i]         = fachwert.getMaxWidth();
             preferredWidth[i]   = fachwert.getPreferredWidth();
+            isSummable[i]       = fachwert.isSummable();
         }
 
         hiddenIndex = fachwerte.size();
@@ -184,6 +187,8 @@ public abstract class ATableModel extends AbstractTableModel {
     public int getMaxWidth(int column) {
         return maxWidth[column];
     }
+
+    public boolean isSummable(int column) { return isSummable[column];}
 
     public List<ATableButton> getButtons() {
         return buttons;
