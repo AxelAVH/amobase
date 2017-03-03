@@ -119,6 +119,14 @@ public class ATableForm extends JPanel {
                 }
             }
         });
+
+        ATableHeaderRenderer headerRenderer = new ATableHeaderRenderer(tableModel, true);
+
+        for (int c = 0; c < table.getColumnModel().getColumnCount(); c++) {
+            TableColumn column = table.getColumnModel().getColumn(c);
+            column.setHeaderRenderer(headerRenderer);
+        }
+
     }
 
     private void calculateSum(JTable table) {
