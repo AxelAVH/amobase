@@ -170,10 +170,8 @@ public class MoneyView extends JFrame {
 
             @Override
             public void keyReleased(KeyEvent e) {
-
             }
         });
-
 
         if (AmoStyle.isGuiTestMode()) {
             // der wirkt wirklich
