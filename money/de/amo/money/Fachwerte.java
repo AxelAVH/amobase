@@ -205,6 +205,7 @@ public class Fachwerte {
         fw.setMinWidth(50);
         fw.setMaxWidth(100);
         fw.setLabel30("Betrag");
+        fw.setSummable(true);
 
         return fw;
     }
