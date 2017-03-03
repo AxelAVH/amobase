@@ -4,9 +4,6 @@ package de.amo.view.table;
  * Created by private on 17.01.2016.
  */
 
-import de.amo.view.cellrenderer.ADoubleCellEditor;
-import de.amo.view.cellrenderer.AIntegerCellEditor;
-
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -14,8 +11,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 
 public class ATableForm extends JPanel {
 
@@ -47,6 +43,8 @@ public class ATableForm extends JPanel {
         if (!tableModel.hasEmptyRow()) {
             tableModel.addEmptyRow();
         }
+
+        pimpTable();
 
         scroller = new JScrollPane(table);
         table.setPreferredScrollableViewportSize(new java.awt.Dimension(500, 300));
@@ -92,6 +90,53 @@ public class ATableForm extends JPanel {
 //
 //            add(buttonPanel, BorderLayout.SOUTH);
 //        }
+    }
+
+    private void pimpTable() {
+
+        table.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1) {
+                    calculateSum(table);
+                }
+            }
+        });
+
+        table.addKeyListener(new KeyListener() {
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.isShiftDown()) {
+                    calculateSum(table);
+                }
+            }
+        });
+    }
+
+    private void calculateSum(JTable table) {
+        boolean changed = false;
+        for (int c = 0; c < table.getColumnModel().getColumnCount(); c++) {
+            TableColumn column = table.getColumnModel().getColumn(c);
+            if (tableModel.isSummable(c)) {
+                TableCellRenderer headerRenderer = column.getHeaderRenderer();
+                if (headerRenderer instanceof ATableHeaderRenderer) {
+                    ((ATableHeaderRenderer) headerRenderer).calculateSum(table, c);
+                }
+                changed = true;
+            }
+        }
+        if (changed) {
+            table.getTableHeader().repaint();
+        }
+
     }
 
     public void highlightLastRow(int row) {
