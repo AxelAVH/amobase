@@ -2,8 +2,10 @@ package de.amo.tools;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class StringFormatter {
     
@@ -856,4 +858,22 @@ public class StringFormatter {
 
         return jahr + monat + tag;
     }
+
+    /**
+     * Formatiert einen double-Wert mit Angabe einer Zahl von Nachkommastellen
+     *
+     * @param value             Die zu formatierende Zahl
+     * @param maxFractionDigits Die maximale Zahl der Nachkommastellen
+     * @param minFractionDigits Die minimale Zahl der Nachkommastellen
+     */
+    public static String formatDouble(double value, int maxFractionDigits, int minFractionDigits) {
+        //String pattern = "###,##0.00";
+        NumberFormat formatter = NumberFormat.getNumberInstance(Locale.GERMAN);
+        formatter.setGroupingUsed(false);
+        formatter.setMaximumFractionDigits(maxFractionDigits);
+        formatter.setMinimumFractionDigits(minFractionDigits);
+        formatter.setGroupingUsed(true);
+        return formatter.format(value);
+    }
+
 }
