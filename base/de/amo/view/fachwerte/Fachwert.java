@@ -12,6 +12,7 @@ public abstract class Fachwert {
     Class               columnClass;
     TableCellRenderer   tableCellRenderer;
     TableCellEditor     tableCellEditor;
+    boolean             isSummable;
 
     String columName;
     String label30;
@@ -152,5 +153,13 @@ public abstract class Fachwert {
             return 100;
         }
         return maxWidth;
+    }
+
+    public boolean isSummable() {
+        return isSummable;
+    }
+
+    public void setSummable(boolean summable) {
+        isSummable = summable;
     }
 }
