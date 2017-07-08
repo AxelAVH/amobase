@@ -57,10 +57,12 @@ public class UmsatzReader_INGDIBA {
         return  kontonummerTmp;
     }
 
+/* Liest alle Buchungssatz-Zeilen der Datei in Moneytransient.buchungszeilen ein
 
+ */
     public Buchungszeile readIngDibaFile(File file) throws Exception {
 
-        SortedMap<String, Buchungszeile> map = moneyTransient.getBuchungszeilen();
+//        SortedMap<String, Buchungszeile> map = moneyTransient.getBuchungszeilen();
 
         InputStreamReader reader            = new InputStreamReader(new FileInputStream(file),"windows-1252");
         BufferedReader br                   = new BufferedReader(reader);
@@ -108,9 +110,9 @@ public class UmsatzReader_INGDIBA {
             Buchungszeile b = Buchungszeile.fromIngDibaZeile(zeile);
             buchungszeileLast =b;
             System.out.println(zeile);
-            if (!map.containsKey(b.getUniquenessKey())) {   // durch den Umsatz-Datensatz wird eine bereits bestehende Zeile NICHT überschieben
+            if (!moneyTransient.getBuchungszeilen().containsKey(b.getUniquenessKey())) {   // durch den Umsatz-Datensatz wird eine bereits bestehende Zeile NICHT überschieben
                 //System.out.println("KEY: " + b.getUniquenessKey());
-                map.put(b.getUniquenessKey(), b);
+                moneyTransient.getBuchungszeilen().put(b.getUniquenessKey(), b);
             }
         }
         br.close();
