@@ -5,8 +5,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.ParsePosition;
 
 /**
+ * Erkenntnis: Ursache für das Wiedereinsetzen der Zahlen nach Löschen und Verlassen ist wahrscheinlich eine Parseexception für den leeren Wert
+ *
  * Created by private on 05.01.2016.
  */
 public class ANumberInputField extends JFormattedTextField {
@@ -26,7 +30,7 @@ public class ANumberInputField extends JFormattedTextField {
             bigDecimal = new BigDecimal(integer).movePointLeft(nachkommastellen);
         }
 
-        DecimalFormat format = new DecimalFormat();
+        DecimalFormat format = new ADecimalFormat();
 
         String pattern = "#.##0";
         if (nachkommastellen > 0) {
@@ -48,7 +52,7 @@ public class ANumberInputField extends JFormattedTextField {
                                           String allowed = "0123456789,.-";
                                           Character typed = e.getKeyChar();
                                           if (allowed.indexOf(typed) < 0) {
-                                              e.setKeyChar(e.CHAR_UNDEFINED);
+                                             e.setKeyChar(e.CHAR_UNDEFINED);
                                           }
                                       }
                                       @Override
@@ -95,4 +99,16 @@ public class ANumberInputField extends JFormattedTextField {
         return bigDecimal.intValue();
     }
 
+
+    static class ADecimalFormat extends DecimalFormat {
+
+        public Number parse(String text, ParsePosition pos) {
+            if ("".equals(text) || text == null) {
+                pos.setIndex(-1);
+                return null;
+            }
+            return super.parse(text, pos);
+        }
+
+    }
 }
