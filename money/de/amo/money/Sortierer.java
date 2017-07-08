@@ -78,8 +78,10 @@ public class Sortierer {
 
         for (Buchungszeile buchungszeile : potentielleNachfolger) {
             if (buchungszeile.isAllerersterSatz) {
-                lastSaldo = buchungszeile.saldo - buchungszeile.betrag;
-                buchungszeile.isAllerersterSatz = false;
+//                lastSaldo = buchungszeile.saldo - buchungszeile.betrag;
+//                buchungszeile.isAllerersterSatz = false;
+                potentielleNachfolger.remove(buchungszeile);
+                return buchungszeile;
             }
         }
 
