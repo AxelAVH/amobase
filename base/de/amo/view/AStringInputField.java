@@ -7,7 +7,7 @@ import javax.swing.*;
  */
 public class AStringInputField extends JTextField {
 
-    private AStringInputField(String text) {
+    protected AStringInputField(String text) {
         super(text);
     }
 
