@@ -9,6 +9,7 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -42,6 +43,7 @@ public class MoneyView extends JFrame {
     ANumberInputField filter_betragVon;
     ADateInputField   filter_datumBis;
     ADateInputField   filter_datumVon;
+    ANumberInputField filter_Monatsstichtag;
 
     private MyActionListener actionListener;
 
@@ -305,9 +307,17 @@ public class MoneyView extends JFrame {
         aFieldPane = new AFieldPane("Kommentar", filter_kommentar, 25, 120, 200, 0);
         filterPanel.add(aFieldPane);
 
+        JPanel kategoriePanel = new JPanel();
+        kategoriePanel .setLayout(new BoxLayout(kategoriePanel, BoxLayout.X_AXIS));
+        filterPanel.add(kategoriePanel );
+
         filter_kategorie = AStringInputField.create(null);
-        aFieldPane = new AFieldPane("Kategorie", filter_kategorie, 25, 70, 200, 0);
-        filterPanel.add(aFieldPane);
+        aFieldPane = new AFieldPane("Kategorie", filter_kategorie, 25, 70, 70, 0);
+        kategoriePanel .add(aFieldPane);
+
+        filter_Monatsstichtag = ANumberInputField.create( Integer.MIN_VALUE, 0 );
+        aFieldPane = new AFieldPane("Montatstag", filter_Monatsstichtag, 25, 70, 30, 0);
+        kategoriePanel .add(aFieldPane);
 
         JPanel b1 = new JPanel();
         b1.add(createViewRefreshButton());
@@ -398,6 +408,8 @@ public class MoneyView extends JFrame {
         messageTextArea.setCaretPosition(messageTextArea.getDocument().getLength());
     }
 
+    private Map<String,Object[]> salden2Monatsstichpunkt;
+
     private boolean isToList(Buchungszeile buchungszeile) {
 
         if (!ConditionChecker.check(buchungszeile.quelleZiel        , filter_quelleZiel.getText()))         return false;
@@ -427,7 +439,19 @@ public class MoneyView extends JFrame {
         int countHauptbuchungenSelected = 0;
         int countUmbuchungenSelectected = 0;
 
-        for (Buchungszeile buchungszeile : aktuelleDaten) {
+        // Anzeige der Buchungssätze, die den Abschlusssaldo eines Monatsstichtags erzeugt haben:
+        if (filter_Monatsstichtag.getIntValue() != Integer.MIN_VALUE) {
+            String tag = "" + filter_Monatsstichtag.getIntValue();
+            if (tag.length() == 1) {
+                tag = "0" + tag;
+            }
+            List<Buchungszeile> stichtagsliste = getStichtagsliste( tag , aktuelleDaten );
+
+            for ( Buchungszeile buchungszeile : stichtagsliste ) {
+                model.getDataVector().add( buchungszeile );
+            }
+
+        } else for (Buchungszeile buchungszeile : aktuelleDaten) {
 
             if (buchungszeile.isUmbuchung()) {
                 countUmbuchungen++;
@@ -476,5 +500,55 @@ public class MoneyView extends JFrame {
         addMessage(moneyController.getMessage());
 
         model.fireTableDataChanged();
+    }
+
+    private List<Buchungszeile> getStichtagsliste( String tag, List<Buchungszeile> aktuelleDaten ) {
+
+        Iterator<Buchungszeile> iterator = aktuelleDaten.iterator();
+
+        List<Buchungszeile> ret = new ArrayList<>();
+
+        Buchungszeile last = aktuelleDaten.iterator().next();
+        Buchungszeile akt  = aktuelleDaten.iterator().next();
+
+        String aktMonat = "200001";
+        String stichtagImMonat = aktMonat + tag;
+
+
+        while ( iterator.hasNext() ) {
+
+            if ( akt.datum.compareTo( stichtagImMonat ) > 0 ) {
+                ret.add( last );
+                if ( akt.datum.substring( 0, 6 ).equals( aktMonat ) ) {
+                    aktMonat = getNextMonat( aktMonat );
+                    stichtagImMonat = aktMonat + tag;
+                } else {
+                    aktMonat = akt.datum.substring( 0, 6 );   // hier kann noch was schiefgehen
+                    stichtagImMonat = aktMonat + tag;
+                }
+            }
+            last = akt;
+            akt = iterator.next();
+        }
+        return ret;
+    }
+
+    private String getNextMonat( String lastMonat ) {
+        String year = lastMonat.substring( 0, 4 );
+        String month = lastMonat.substring( 4, 6 );
+        if ( "12".equals( month ) ) {
+            month = "01";
+            int y = Integer.parseInt( year );
+            y = y + 1;
+            year = "" + y;
+        } else {
+            int m = Integer.parseInt( month );
+            m = m + 1;
+            month = "" + m;
+            if ( m < 10 ) {
+                month = "0" + month;
+            }
+        }
+        return year + month;
     }
 }
