@@ -339,6 +339,7 @@ public class MoneyView extends JFrame {
         filter_betragVon.setValue(null);
         filter_datumBis.setValue(null);
         filter_datumVon.setValue(null);
+        filter_Monatsstichtag.setValue( null );
     }
 
     private JButton createSaveButton() {
