@@ -476,7 +476,19 @@ public class Buchungszeile implements Cloneable {
         return split;
     }
 
-    public static void main(String[] args) {
+
+    @Override
+    public String toString() {
+        return     "Haupt: "     + hauptbuchungsNr
+                + " Um: "       + umbuchungNr
+                + " UmPro: "    + umbuchungsPro
+                + " Datum: "    + datum
+                + " Betrag: "   + betrag
+                + " Saldo: "    + saldo
+                + " Text: "     + buchungstext;
+    }
+
+    public static void main( String[] args) {
 //        System.out.println(formatLongForEuroOutput(1));
 //        System.out.println(formatLongForEuroOutput(11));
 //        System.out.println(formatLongForEuroOutput(111));
