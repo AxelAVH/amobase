@@ -24,6 +24,7 @@ public class Fachwerte {
     public static String DATUM              = "Datum";
     public static String PBETRAG            = "P-Betrag";
     public static String SALDO              = "Saldo";
+    public static String SALDOGEGLAETTET    = "Saldo-Geglättet";
     public static String PSALDO             = "p-Saldo";
     public static String HAUPTBUCHUNGSNR    = "Hauptbuchungsnr";
     public static String UMBUCHUNGSNR       = "Umbuchungsnr";
@@ -41,7 +42,7 @@ public class Fachwerte {
         ret.add(getFachwert_Betrag());
         ret.add(getFachwert_Waehrung());
         ret.add(getFachwert_Saldo());
-//        ret.add(getFachwert_PBetrag());
+        ret.add(getFachwert_SaldoGeglaettet());
 //        ret.add(getFachwert_PSaldo());
 
         return ret;
@@ -246,6 +247,20 @@ public class Fachwerte {
         fw.setMinWidth(50);
         fw.setMaxWidth(100);
         fw.setLabel30("PSaldo");
+
+        return fw;
+    }
+
+
+    public static Fachwert getFachwert_SaldoGeglaettet() {
+
+        Fachwert fw = new FachwertDouble(SALDOGEGLAETTET);
+
+        fw.setColumName("Saldo geglättet");
+        fw.setPreferredWidth(70);
+        fw.setMinWidth(50);
+        fw.setMaxWidth(100);
+        fw.setLabel30("Saldo Geglättet");
 
         return fw;
     }

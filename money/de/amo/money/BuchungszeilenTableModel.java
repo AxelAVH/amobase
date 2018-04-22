@@ -28,6 +28,7 @@ public class BuchungszeilenTableModel extends ATableModel {
         if (Fachwerte.KOMMENTAR.equals(attributName))           return buchungszeile.kommentar;
         if (Fachwerte.PBETRAG.equals(attributName))             return buchungszeile.getPBetragAsDouble();
         if (Fachwerte.PSALDO.equals(attributName))              return buchungszeile.getPSaldoAsDouble();
+        if (Fachwerte.SALDOGEGLAETTET.equals(attributName))     return buchungszeile.getSaldoGeglaettetAsDouble();
         if (Fachwerte.QUELLEZIEL.equals(attributName))          return buchungszeile.quelleZiel;
         if (Fachwerte.SALDO.equals(attributName))               return buchungszeile.getSaldoAsDouble();
         if (Fachwerte.UMBUCHUNGSNR.equals(attributName))        return buchungszeile.umbuchungNr;
@@ -50,6 +51,7 @@ public class BuchungszeilenTableModel extends ATableModel {
         if (Fachwerte.KOMMENTAR.equals(attributName)) buchungszeile.kommentar = (String) value;
         if (Fachwerte.PBETRAG.equals(attributName)) buchungszeile.setPBetrag((Double) value);
         if (Fachwerte.PSALDO.equals(attributName)) buchungszeile.setPSaldo((Double) value);
+        if (Fachwerte.SALDOGEGLAETTET.equals(attributName)) buchungszeile.setSaldoGeglaettet((Double) value);
         if (Fachwerte.QUELLEZIEL.equals(attributName)) buchungszeile.quelleZiel = (String) value;
         if (Fachwerte.SALDO.equals(attributName)) buchungszeile.setSaldo((Double) value);
         if (Fachwerte.UMBUCHUNGSNR.equals(attributName)) buchungszeile.umbuchungNr = (int) value;

@@ -4,10 +4,8 @@ import de.amo.tools.Datum;
 import de.amo.tools.Environment;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * Created by private on 06.09.2015.
@@ -116,12 +114,6 @@ public class MoneyTransient {
             } else {
                 saldo += buchungszeile.betrag;
             }
-//            psaldo += buchungszeile.pbetrag;
-//            buchungszeile.pSaldo = psaldo;
-
-//            if (buchungszeile.datum.compareTo(monatsAbgrenzDatum) <= 0) {
-//                pSaldoMonatsanfang += buchungszeile.pbetrag;
-//            }
 
             if (buchungszeile.hauptbuchungsNr > 0) {
                 lastHauptbuchungsnr = buchungszeile.hauptbuchungsNr;
@@ -132,9 +124,79 @@ public class MoneyTransient {
 
         }
 
-//        pToNullBetrag             = -(psaldo + forecastSumme);
-//
-//        pToNullBetragMonatsanfang = -(pSaldoMonatsanfang + forecastSumme);
+        // Aufteilen der als Umlage markierten Beträge in Jahres-Zwölftel
+        Map<String,Integer> jahresumlagevolumen = new HashMap<>(  );
+
+        for (Buchungszeile buchungszeile : sortierteBuchungszeilen) {
+            String kommentar = buchungszeile.kommentar;
+            if (kommentar != null) {
+                kommentar = kommentar.toLowerCase();
+            } else {
+                kommentar = "";
+            }
+            if (kommentar.startsWith( "$umlage$")) {
+
+                String value  = kommentar.substring( "$umlage$".length() ).replace( ",", "." );
+                double d      = Double.valueOf( value );
+                BigDecimal bd = new BigDecimal(d);
+                bd            = bd.movePointRight(2);
+                int umlagevolumen = bd.intValue();
+
+                String jahr       = buchungszeile.datum.substring( 0,4 );
+                Integer jahresVol = jahresumlagevolumen.get(jahr);
+                if (jahresVol == null) {
+                    jahresVol = new Integer( 0 );
+                }
+                jahresumlagevolumen.put(jahr, jahresVol + umlagevolumen);
+            }
+        }
+
+        String jahr         = "";
+        String monat        = "";
+        int    monatsUmlage = 0;
+        int    jahresUmlage = 0;
+
+        for ( Buchungszeile buchungszeile : sortierteBuchungszeilen ) {
+
+            String aktJahr  = buchungszeile.datum.substring( 0, 4 );
+            String aktMonat = buchungszeile.datum.substring( 0, 6 );
+
+            if ( !aktJahr.equals( jahr ) ) {
+                jahr = aktJahr;
+                Integer b = jahresumlagevolumen.get( aktJahr );
+                if ( b != null ) {
+                    jahresUmlage = b;
+                } else {
+                    jahresUmlage = 0;
+                }
+                monatsUmlage = 0;
+            }
+
+            // ToDo: wenn ein Monat keine Werte hätte, würde für ihn nicht hochgezählt werden
+            if ( !aktMonat.equals( monat ) ) {
+                monat        = aktMonat;
+                monatsUmlage = monatsUmlage + jahresUmlage / 12;
+            }
+
+            String kommentar = buchungszeile.kommentar;
+            if (kommentar != null) {
+                kommentar = kommentar.toLowerCase();
+            } else {
+                kommentar = "";
+            }
+            if (kommentar.startsWith( "$umlage$")) {
+
+                String value = kommentar.substring( "$umlage$".length() );
+                value = value.replace( ",", "." );
+                double d = Double.valueOf( value );
+                BigDecimal bd = new BigDecimal( d );
+                bd = bd.movePointRight( 2 );
+                int umlagevolumen = bd.intValue();
+                monatsUmlage = monatsUmlage - umlagevolumen;
+            }
+
+            buchungszeile.saldoGeglaettet = buchungszeile.saldo + monatsUmlage;
+        }
     }
 
     public void addUmbuchungszeilen(Buchungszeile pro, Buchungszeile contra) {

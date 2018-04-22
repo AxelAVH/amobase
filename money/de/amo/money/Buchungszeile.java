@@ -34,6 +34,8 @@ public class Buchungszeile implements Cloneable {
     public String kommentar         = "";
     public String kategorie         = "";
 
+    public int    saldoGeglaettet   = 0;
+
     public boolean isAllerersterSatz  = false;
 
     public String getUniquenessKey() {
@@ -166,11 +168,27 @@ public class Buchungszeile implements Cloneable {
         return fromInt(pSaldo);
     }
 
+    public double getSaldoGeglaettetAsDouble() {
+        return fromInt(saldoGeglaettet);
+    }
+
     public void setPSaldo(double pSaldo) {
         this.pSaldo = fromDouble(pSaldo);
     }
 
-    public static Buchungszeile fromIngDibaZeile(String zeile) {
+    public int getSaldoGeglaettet() {
+        return saldoGeglaettet;
+    }
+
+    public void setSaldoGeglaettet( int saldoGeglaettet ) {
+        this.saldoGeglaettet = saldoGeglaettet;
+    }
+
+    public void setSaldoGeglaettet( double saldoGeglaettet ) {
+        this.saldoGeglaettet = fromDouble( saldoGeglaettet );
+    }
+
+    public static Buchungszeile fromIngDibaZeile( String zeile) {
         Buchungszeile b = new Buchungszeile();
         String[] columns = getColumns(zeile);
         String s            = columns[0];
