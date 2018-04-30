@@ -45,6 +45,10 @@ public class Buchungszeile implements Cloneable {
         t = t.substring(t.length() - 20);
         String key = datum + "~" + s + "~" + t + "~" + quelleZiel.trim() + "~" + verwendungszweck.trim();
 
+        while (key.contains( "  " )) {
+            key = key.replace( "  ", " " );
+        }
+
         if (isUmbuchung()) {    // Umbuchungssätze tauchen nur in der database-Datei auf, müssen nicht zwischen Buchungssätzen und Databasezeilen gemerged werden
             key = hauptbuchungsNr + "~" + umbuchungNr + "~" + key;
         }
@@ -188,7 +192,7 @@ public class Buchungszeile implements Cloneable {
         this.saldoGeglaettet = fromDouble( saldoGeglaettet );
     }
 
-    public static Buchungszeile fromIngDibaZeile( String zeile) {
+    public static Buchungszeile fromIngDibaZeile( String zeile, boolean isFormatApril2018) {
         Buchungszeile b = new Buchungszeile();
         String[] columns = getColumns(zeile);
         String s            = columns[0];
@@ -196,9 +200,14 @@ public class Buchungszeile implements Cloneable {
         b.quelleZiel        = columns[2];
         b.buchungstext      = columns[3];
         b.verwendungszweck  = columns[4];
-        b.betrag            = readLong(columns[5]);
+        if (!isFormatApril2018) {
+            b.betrag = readLong( columns[5] );
+            b.saldo  = readLong( columns[7] );
+        } else {
+            b.saldo  = readLong( columns[5] );
+            b.betrag = readLong( columns[7] );
+        }
         b.waehrung          = columns[6];
-        b.saldo             = readLong(columns[7]);
         b.pbetrag           = b.betrag;
         return b;
     }
@@ -262,7 +271,8 @@ public class Buchungszeile implements Cloneable {
             if (out[i] == null) {
                 out[i] = "";
             }
-            out[i] = "\"" + out[i] + "\"";
+            out[i] = out[i].replace( ";", ":" );        // damit das Format sicher einlesbar bleibt
+//            out[i] = "\"" + out[i] + "\"";
             if (i != 0) {
                 out[i] = ";" + out[i];
             }
@@ -292,7 +302,7 @@ public class Buchungszeile implements Cloneable {
             if (out[i] == null) {
                 out[i] = "";
             }
-            out[i] = "\"" + out[i] + "\"";
+            out[i] = out[i].replace( ";", ":" );        // damit das Format sicher einlesbar bleibt
             if (i != 0) {
                 out[i] = ";" + out[i];
             }

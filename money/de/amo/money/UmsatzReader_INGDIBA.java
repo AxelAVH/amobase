@@ -53,8 +53,7 @@ public class UmsatzReader_INGDIBA {
                 break;
             }
             if (zeile.startsWith(kontoZeilenAnfang3)) {
-                kontonummerTmp = zeile.substring(kontoZeilenAnfang3.length());
-
+                kontonummerTmp    = zeile.substring(kontoZeilenAnfang3.length());
                 break;
             }
         }
@@ -75,9 +74,11 @@ public class UmsatzReader_INGDIBA {
         Buchungszeile  buchungszeileLast    = null;
         String          zeile               = null;
         boolean         startFound          = false;
-        String          kontoZeilenAnfang1   = "\"Konto\";\"";
-        String          kontoZeilenAnfang2   = "Konto;";
-        String          kontoZeilenAnfang3   = "IBAN;";
+        String          kontoZeilenAnfang1  = "\"Konto\";\"";
+        String          kontoZeilenAnfang2  = "Konto;";
+        String          kontoZeilenAnfang3  = "IBAN;";
+        boolean         isFormatApril2018   = false;
+
 
         while ((zeile = br.readLine()) != null) {
 
@@ -92,6 +93,7 @@ public class UmsatzReader_INGDIBA {
                     kontonummerTmp = zeile.substring(kontoZeilenAnfang2.length());
                 } else {
                     kontonummerTmp = zeile.substring(kontoZeilenAnfang3.length());
+                    isFormatApril2018 = true;
                 }
 
                 if ("Girokonto: 5407433753".equals(kontonummerTmp)) {   // IngDIBA hat nach Einführung der SEPA-Nummern die Darstellung verändert
@@ -116,7 +118,7 @@ public class UmsatzReader_INGDIBA {
                 continue;
             }
 
-            Buchungszeile b = Buchungszeile.fromIngDibaZeile(zeile);
+            Buchungszeile b = Buchungszeile.fromIngDibaZeile(zeile, isFormatApril2018);
             buchungszeileLast =b;
             System.out.println(zeile);
             if (!moneyTransient.getBuchungszeilen().containsKey(b.getUniquenessKey())) {   // durch den Umsatz-Datensatz wird eine bereits bestehende Zeile NICHT überschieben
