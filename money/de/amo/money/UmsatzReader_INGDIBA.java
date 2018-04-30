@@ -28,6 +28,7 @@ public class UmsatzReader_INGDIBA {
         String          zeile               = null;
         String          kontoZeilenAnfang1  = "\"Konto\";\"";
         String          kontoZeilenAnfang2  = "Konto;";
+        String          kontoZeilenAnfang3  = "IBAN;";          // Format ab Ende April 2018
         String          kontonummerTmp      = null;
 
         while ((zeile = br.readLine()) != null) {
@@ -51,6 +52,11 @@ public class UmsatzReader_INGDIBA {
 
                 break;
             }
+            if (zeile.startsWith(kontoZeilenAnfang3)) {
+                kontonummerTmp = zeile.substring(kontoZeilenAnfang3.length());
+
+                break;
+            }
         }
         br.close();
         reader.close();
@@ -71,18 +77,21 @@ public class UmsatzReader_INGDIBA {
         boolean         startFound          = false;
         String          kontoZeilenAnfang1   = "\"Konto\";\"";
         String          kontoZeilenAnfang2   = "Konto;";
+        String          kontoZeilenAnfang3   = "IBAN;";
 
         while ((zeile = br.readLine()) != null) {
 
-            if (zeile.startsWith(kontoZeilenAnfang1) || zeile.startsWith(kontoZeilenAnfang2)) {
+            if (zeile.startsWith(kontoZeilenAnfang1) || zeile.startsWith(kontoZeilenAnfang2) || zeile.startsWith(kontoZeilenAnfang3)) {
 
                 String kontonummerTmp;
 
                 if (zeile.startsWith(kontoZeilenAnfang1)) {
                     kontonummerTmp = zeile.substring(kontoZeilenAnfang1.length());
                     kontonummerTmp = kontonummerTmp.replace("\"", "");
-                } else {
+                } else if (zeile.startsWith( kontoZeilenAnfang2 )){
                     kontonummerTmp = zeile.substring(kontoZeilenAnfang2.length());
+                } else {
+                    kontonummerTmp = zeile.substring(kontoZeilenAnfang3.length());
                 }
 
                 if ("Girokonto: 5407433753".equals(kontonummerTmp)) {   // IngDIBA hat nach Einführung der SEPA-Nummern die Darstellung verändert
