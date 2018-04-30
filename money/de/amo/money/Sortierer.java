@@ -1,9 +1,6 @@
 package de.amo.money;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,28 +13,36 @@ public class Sortierer {
 
     public List<Buchungszeile> sortiere(SortedMap<String, Buchungszeile> buchungszeilen) {
 
-        SortedMap<String, List<Buchungszeile>> dayMap = new TreeMap<String, List<Buchungszeile>>();
+        SortedMap<String, SortedMap<String, Buchungszeile>> dayMap = new TreeMap<String, SortedMap<String, Buchungszeile>>();
 
         // Grupieren in Liste der Buchungen eines Tages:
+        int lfd = 0;
         for (Buchungszeile buchungszeile : buchungszeilen.values()) {
-            List<Buchungszeile> tagesbuchungen = dayMap.get(buchungszeile.datum);
+            lfd++;
+            SortedMap<String, Buchungszeile> tagesbuchungen = dayMap.get(buchungszeile.datum);
             if (tagesbuchungen == null) {
-                tagesbuchungen = new ArrayList<Buchungszeile>();
+                tagesbuchungen = new TreeMap<String, Buchungszeile>();
                 dayMap.put(buchungszeile.datum, tagesbuchungen);
             }
-            tagesbuchungen.add(buchungszeile);
+            String key1 = "                    " + buchungszeile.hauptbuchungsNr;
+            key1 = key1.substring( key1.length()-10 );
+            String key2 = "                    " + buchungszeile.umbuchungNr;
+            key2 = key2.substring( key2.length()-10 );
+            String key3 = buchungszeile.umbuchungsPro == true ? "a" : "b";
+            String tagesbuchungskey = key1 + "|" + key2 + "|" + key3 + "|" + lfd;
+            tagesbuchungen.put(tagesbuchungskey, buchungszeile);
         }
 
         List<Buchungszeile> ret = new ArrayList<Buchungszeile>();
 
 
-        for (List<Buchungszeile> buchungszeiles : dayMap.values()) {
-            while (buchungszeiles.size() > 0) {
+        for (SortedMap<String, Buchungszeile> tagesbuchungen : dayMap.values()) {
+            while (tagesbuchungen.size() > 0) {
                 Buchungszeile lastBuchung = null;
                 if (ret.size() > 0) {
                     lastBuchung = ret.get(ret.size() - 1);
                 }
-                ret.add(extrahiereNachfolger(lastBuchung, buchungszeiles));
+                ret.add(extrahiereNachfolger(lastBuchung, tagesbuchungen));
             }
         }
 
@@ -45,50 +50,73 @@ public class Sortierer {
     }
 
 
-    private Buchungszeile extrahiereNachfolger(Buchungszeile lastBuchung, List<Buchungszeile> potentielleNachfolger) {
+    private Buchungszeile extrahiereNachfolger(Buchungszeile lastBuchung, SortedMap<String, Buchungszeile> potentielleNachfolger) {
         int lastSaldo = 0;
         if (lastBuchung != null) {
             lastSaldo = lastBuchung.saldo;
         }
 
+        // zuerst über die Buchungseinträge der Datenbank versuchen:
+        for ( Map.Entry<String, Buchungszeile> entry : potentielleNachfolger.entrySet() ) {
+            if (entry.getValue().hauptbuchungsNr != 0) {       // die sind der Datenbank bereits bekannt und durch die Sortiermerkmale gesichert
+                    potentielleNachfolger.remove(entry.getKey());
+                    return entry.getValue();
+            }
+//            if (buchungszeile.umbuchungNr == lastBuchung.umbuchungNr+1) {
+//                if (buchungszeile.umbuchungNr == 0) {   // normale Bewegung
+//                    potentielleNachfolger.remove(buchungszeile);
+//                    return buchungszeile;
+//                }
+//            }
+//            if (buchungszeile.umbuchungNr == lastBuchung.umbuchungNr) { // Umbuchung
+//                if (lastBuchung.umbuchungNr == 0 && buchungszeile.umbuchungsPro) {
+//                    potentielleNachfolger.remove(buchungszeile);
+//                    return buchungszeile;
+//                }
+//                if (lastBuchung.umbuchungNr == 0 && buchungszeile.umbuchungsPro) {
+//            }
+        }
+
+
+
         // zuerst eine eventuell komplementäre Umbuchung rausfischen:
         if (lastBuchung != null) {
-            for (Buchungszeile buchungszeile : potentielleNachfolger) {
+            for (Map.Entry<String, Buchungszeile> entry : potentielleNachfolger.entrySet()) {
                 if (lastBuchung.hauptbuchungsNr > 0 &&      // Umbuchungen sollte es erst geben, wenn der Buchungsatz einmal gespeichert wurde.
 //                    lastBuchung.umbuchungNr > 0 &&          // nur dann liegt eine Umbuchung vor
-                        lastBuchung.hauptbuchungsNr == buchungszeile.hauptbuchungsNr && (lastBuchung.umbuchungNr) == buchungszeile.umbuchungNr) {
-                    potentielleNachfolger.remove(buchungszeile);
-                    return buchungszeile;
+                        lastBuchung.hauptbuchungsNr == entry.getValue().hauptbuchungsNr && (lastBuchung.umbuchungNr) == entry.getValue().umbuchungNr) {
+                    potentielleNachfolger.remove(entry.getKey());
+                    return entry.getValue();
                 }
             }
         }
 
         // dann eine evtl. Umbuchung rausfischen:
         if (lastBuchung != null) {
-            for (Buchungszeile buchungszeile : potentielleNachfolger) {
+            for (Map.Entry<String, Buchungszeile> entry : potentielleNachfolger.entrySet()) {
                 if (lastBuchung.hauptbuchungsNr > 0 &&      // Umbuchungen sollte es erst geben, wenn der Buchungsatz einmal gespeichert wurde.
 //                    lastBuchung.umbuchungNr > 0 &&          // nur dann liegt eine Umbuchung vor
-                        lastBuchung.hauptbuchungsNr == buchungszeile.hauptbuchungsNr && (lastBuchung.umbuchungNr+1) == buchungszeile.umbuchungNr) {
-                    potentielleNachfolger.remove(buchungszeile);
-                    return buchungszeile;
+                        lastBuchung.hauptbuchungsNr == entry.getValue().hauptbuchungsNr && (lastBuchung.umbuchungNr+1) == entry.getValue().umbuchungNr) {
+                    potentielleNachfolger.remove(entry.getKey());
+                    return entry.getValue();
                 }
             }
         }
 
 
-        for (Buchungszeile buchungszeile : potentielleNachfolger) {
-            if (buchungszeile.isAllerersterSatz) {
+        for (Map.Entry<String, Buchungszeile> entry : potentielleNachfolger.entrySet()) {
+            if (entry.getValue().isAllerersterSatz) {
 //                lastSaldo = buchungszeile.saldo - buchungszeile.betrag;
 //                buchungszeile.isAllerersterSatz = false;
-                potentielleNachfolger.remove(buchungszeile);
-                return buchungszeile;
+                potentielleNachfolger.remove(entry .getKey());
+                return entry.getValue();
             }
         }
 
-        for (Buchungszeile buchungszeile : potentielleNachfolger) {
-            if (lastSaldo + buchungszeile.betrag == buchungszeile.saldo) {
-                potentielleNachfolger.remove(buchungszeile);
-                return buchungszeile;
+        for (Map.Entry<String, Buchungszeile> entry : potentielleNachfolger.entrySet()) {
+            if (lastSaldo + entry.getValue().betrag == entry.getValue().saldo) {
+                potentielleNachfolger.remove(entry .getKey());
+                return entry.getValue();
             }
         }
         String msg = "Keinen Start-Satz gefunden.";
@@ -96,7 +124,7 @@ public class Sortierer {
             msg = "Kein Nachfolger gefunden zu Zeile:\n" + lastBuchung.toShow();
         }
         msg += "\nPotentielle Nachfolger:";
-        for (Buchungszeile buchungszeile : potentielleNachfolger) {
+        for (Buchungszeile buchungszeile : potentielleNachfolger.values()) {
             msg += "\n" + buchungszeile.toShow();
         }
         throw new RuntimeException(msg);
