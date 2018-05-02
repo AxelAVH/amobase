@@ -41,6 +41,7 @@ public class Sortierer {
                 Buchungszeile lastBuchung = null;
                 if (ret.size() > 0) {
                     lastBuchung = ret.get(ret.size() - 1);
+                    System.out.println(lastBuchung);
                 }
                 ret.add(extrahiereNachfolger(lastBuchung, tagesbuchungen));
             }
@@ -115,8 +116,9 @@ public class Sortierer {
 
         for (Map.Entry<String, Buchungszeile> entry : potentielleNachfolger.entrySet()) {
             if (lastSaldo + entry.getValue().betrag == entry.getValue().saldo) {
+                Buchungszeile ret = entry.getValue();           // !! beim remove verändert sich das Entry, liefert danach ein falsches value!!
                 potentielleNachfolger.remove(entry .getKey());
-                return entry.getValue();
+                return ret;
             }
         }
         String msg = "Keinen Start-Satz gefunden.";
