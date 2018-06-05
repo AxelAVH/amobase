@@ -53,7 +53,7 @@ public class UmsatzReader_INGDIBA {
                 break;
             }
             if (zeile.startsWith(kontoZeilenAnfang3)) {
-                kontonummerTmp    = zeile.substring(kontoZeilenAnfang3.length());
+                kontonummerTmp    = zeile.substring(kontoZeilenAnfang3.length()).replace(" ","");
                 break;
             }
         }
@@ -92,7 +92,7 @@ public class UmsatzReader_INGDIBA {
                 } else if (zeile.startsWith( kontoZeilenAnfang2 )){
                     kontonummerTmp = zeile.substring(kontoZeilenAnfang2.length());
                 } else {
-                    kontonummerTmp = zeile.substring(kontoZeilenAnfang3.length());
+                    kontonummerTmp = zeile.substring(kontoZeilenAnfang3.length()).replace(" ","");
                     isFormatApril2018 = true;
                 }
 
