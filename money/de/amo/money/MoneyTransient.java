@@ -18,12 +18,7 @@ public class MoneyTransient {
     boolean isSaved = true;
     String  kontonnr = "";
 
-//    int pToNullBetrag = 0;  // Was m�sste �berwiesen werden, damit der pSaldo auf 0 geht?
-//    int forecastSumme = 0;
-
     String monatsAbgrenzDatum        = null;
-//    int    pSaldoMonatsanfang        = 0;
-//    int    pToNullBetragMonatsanfang = 0;
 
     File lastBackupDatabaseFile;
 
@@ -128,26 +123,13 @@ public class MoneyTransient {
         Map<String,Integer> jahresumlagevolumen = new HashMap<>(  );
 
         for (Buchungszeile buchungszeile : sortierteBuchungszeilen) {
-            String kommentar = buchungszeile.kommentar;
-            if (kommentar != null) {
-                kommentar = kommentar.toLowerCase();
-            } else {
-                kommentar = "";
-            }
-            if (kommentar.startsWith( "$umlage$")) {
-
-                String value  = kommentar.substring( "$umlage$".length() ).replace( ",", "." );
-                double d      = Double.valueOf( value );
-                BigDecimal bd = new BigDecimal(d);
-                bd            = bd.movePointRight(2);
-                int umlagevolumen = bd.intValue();
-
+            if (buchungszeile.hasJahresumlage()) {
                 String jahr       = buchungszeile.datum.substring( 0,4 );
                 Integer jahresVol = jahresumlagevolumen.get(jahr);
                 if (jahresVol == null) {
                     jahresVol = new Integer( 0 );
                 }
-                jahresumlagevolumen.put(jahr, jahresVol + umlagevolumen);
+                jahresumlagevolumen.put(jahr, jahresVol + buchungszeile.getJahresumlageValue());
             }
         }
 
@@ -178,21 +160,8 @@ public class MoneyTransient {
                 monatsUmlage = monatsUmlage + jahresUmlage / 12;
             }
 
-            String kommentar = buchungszeile.kommentar;
-            if (kommentar != null) {
-                kommentar = kommentar.toLowerCase();
-            } else {
-                kommentar = "";
-            }
-            if (kommentar.startsWith( "$umlage$")) {
-
-                String value = kommentar.substring( "$umlage$".length() );
-                value = value.replace( ",", "." );
-                double d = Double.valueOf( value );
-                BigDecimal bd = new BigDecimal( d );
-                bd = bd.movePointRight( 2 );
-                int umlagevolumen = bd.intValue();
-                monatsUmlage = monatsUmlage - umlagevolumen;
+            if (buchungszeile.hasJahresumlage()) {
+                monatsUmlage = monatsUmlage - buchungszeile.getJahresumlageValue();
             }
 
             buchungszeile.saldoGeglaettet = buchungszeile.saldo + monatsUmlage;
@@ -229,20 +198,4 @@ public class MoneyTransient {
         sortierteBuchungszeilen.add(lastIndex + 1, pro);
         sortierteBuchungszeilen.add(lastIndex + 2, contra);
     }
-
-//    public int ermittleAnzahlUmsatzdateienImDownload() {
-//        int ret = 0;
-//        File dir = getUmsatzdateienDownloadDir();
-//        File[] files = dir.listFiles();
-//        for (int i = 0; i < files.length; i++) {
-//            File file = files[i];
-//            String name = file.getName().toLowerCase();
-//            if (name.startsWith("umsatzanzeige") && file.getName().endsWith(".csv")) {
-//                System.out.println("  Lese Datei " + file.getName());
-//                ret++;
-//            }
-//        }
-//        return ret;
-//    }
-//
 }

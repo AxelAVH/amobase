@@ -56,6 +56,30 @@ public class Buchungszeile implements Cloneable {
         return key;
     }
 
+    public boolean hasJahresumlage() {
+        if (kommentar == null) {
+            return false;
+        }
+        return kommentar.toLowerCase().startsWith("$umlage$");
+
+    }
+
+    public int getJahresumlageValue() {
+        if (kommentar == null || !kommentar.toLowerCase().startsWith("$umlage$")) {
+            return 0;
+        }
+        String value = kommentar.substring( "$umlage$".length() );
+        value = value.replace( ",", "." );
+        if (value.contains(" ")) {
+            value = value.substring(0, value.indexOf(" "));
+        }
+        double d = Double.valueOf( value );
+        BigDecimal bd = new BigDecimal( d );
+        bd = bd.movePointRight( 2 );
+        return bd.intValue();
+    }
+
+
     public boolean isUmbuchung() {
         return umbuchungNr > 0;
     }
@@ -538,7 +562,17 @@ String s = "01.02.2017;01.02.2017;Susanne Moeller;Dauerauftrag/Terminueberweisun
 30.01.2017;30.01.2017;REWE 803 (895) See;Lastschrifteinzug;"REWE SAGT DANKE. 41400803//Seevetal  Maschen/DE
          */
 
-
+        Buchungszeile buchungszeile = new Buchungszeile();
+        buchungszeile.kommentar = "$umlage$123,45 noch ein Text";
+        int value = buchungszeile.getJahresumlageValue();
+        System.out.println(value);
+        buchungszeile.kommentar = "$umlage$123,45 ";
+        value = buchungszeile.getJahresumlageValue();
+        System.out.println(value);
+        buchungszeile.kommentar = "$umlage$123,45";
+        value = buchungszeile.getJahresumlageValue();
+        System.out.println(value);
 
     }
+
 }
