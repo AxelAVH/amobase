@@ -193,7 +193,7 @@ public class MoneyMultiView extends JFrame {
 
                     titel += "beim Einlesen der Umsatzdateien";
 
-                    Map<String,ArrayList<File>> filesProKontonr = new HashMap<>();
+                    Map<String,ArrayList<File>> filesProKontonr  = new HashMap<>();
 
                     List<File> files = ermittleDownloadFiles(umsatzdateienDownloadDir);
 
@@ -205,7 +205,15 @@ public class MoneyMultiView extends JFrame {
                         if (!file.getName().toLowerCase().endsWith(".csv")) {
                             continue;
                         }
-                        String kontoNrTmp = new UmsatzReader_INGDIBA().ermittleKontonummer(file);
+                        String          kontoNrTmp = null;
+                        UmsatzReaderIfc reader     = null;
+                        if (UmsatzReader_INGDIBA.isMyFiletype(file)) {
+                            reader     = new UmsatzReader_INGDIBA();
+                            kontoNrTmp = reader.ermittleKontonummer(file);
+                        } else if (UmsatzReader_1822direkt.isMyFiletype(file)) {
+                            reader     = new UmsatzReader_1822direkt();
+                            kontoNrTmp = reader.ermittleKontonummer(file);
+                        }
 
                         if (kontoNrTmp == null) {
                             addMessage("Datei gefunden: " + file.getName() + " Keine Kontonummer ermittelbar");
@@ -221,7 +229,8 @@ public class MoneyMultiView extends JFrame {
                         }
                         filesDesKontos.add(file);
 
-                        initKonto(kontoNrTmp);
+                        MoneyController moneyController = initKonto(kontoNrTmp);
+                        moneyController.getMoneyTr().setUmsatzReader(reader);
                     }
 
                     for (Map.Entry<String, ArrayList<File>> kontoEntry : filesProKontonr.entrySet()) {

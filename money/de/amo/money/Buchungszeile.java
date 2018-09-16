@@ -15,14 +15,21 @@ import java.util.SortedMap;
  */
 public class Buchungszeile implements Cloneable {
 
+    private static String Format_1822direkt_V1 = "1822direkt_V1";
+
+
     /** Null oder "", sonst:  "V1" oder "V2" usw.
      */
     public String   formatversion;
-    public int      hauptbuchungsNr;
+    public int      hauptbuchungsNr;    // "0" entspricht "nicht definiert"
     public int      umbuchungNr;
     public boolean  umbuchungsPro;
 
-    public String datum             = "";
+    // nur bei 1822direkt gibt es eine Uhrzeit. Bei der Speicherung wird die Uhrzeit an das Datumsfeld angehängt (20180131 09:57)
+    public String datum             = "";   // Format 20171231
+    public String zeit              = "";   // Format 04:09 Buchungszeit taucht erstmals bei 1822direkt auf
+
+
     public int    betrag            = 0;
     public String waehrung          = "";
     public int    saldo             = 0;
@@ -38,12 +45,29 @@ public class Buchungszeile implements Cloneable {
 
     public boolean isAllerersterSatz  = false;
 
+    /* Während des Einlesens kann eine laufende Nummer vergeben werden, diese SOLLTE ABER ab "1" zählen, da "0" immer belegt ist und daher ohne Aussage
+     */
+    private String lfdNrWaehrendEinlesenS = "";
+
+    /** teilt mit, ob ein Saldo eingelesen werden konnte (wenn nicht, wäre dies durch aufsaldieren zu ermitteln)
+     */
+    public boolean hasSaldo         = true;
+
+    public void setLfdNrWaehrendEinlesen(int lfdNrWaehrendEinlesen) {
+        lfdNrWaehrendEinlesenS = "000000000000" + lfdNrWaehrendEinlesen;
+        lfdNrWaehrendEinlesenS  = lfdNrWaehrendEinlesenS.substring(lfdNrWaehrendEinlesenS.length() - 10);
+    }
+
+    public String getLfdNrWaehrendEinlesenS() {
+        return lfdNrWaehrendEinlesenS;
+    }
+
     public String getUniquenessKey() {
         String s = "                    " + betrag;
         s = s.substring(s.length() - 20);
         String t = "                    " + saldo;
         t = t.substring(t.length() - 20);
-        String key = datum + "~" + s + "~" + t + "~" + quelleZiel.trim() + "~" + verwendungszweck.trim();
+        String key = datum + "~" + zeit + "~" + s + "~" + t + "~" + quelleZiel.trim() + "~" + verwendungszweck.trim();
 
         while (key.contains( "  " )) {
             key = key.replace( "  ", " " );
@@ -131,6 +155,7 @@ public class Buchungszeile implements Cloneable {
 
         String[] columns    = getColumns(zeile);
         b.formatversion     = columns[0];
+
         if ("V1".equals(b.formatversion)) {
             b.formatversion     = columns[0];
             b.hauptbuchungsNr   = Integer.parseInt(columns[1]);
@@ -140,6 +165,11 @@ public class Buchungszeile implements Cloneable {
             }
             b.kategorie         = columns[3];
             b.datum             = columns[4];
+
+            if (b.datum.length() > 8) {
+                b.zeit          = columns[4].substring(9,14);
+            }
+
             b.quelleZiel        = columns[5];
             b.buchungstext      = columns[6];
             b.verwendungszweck  = columns[7];
@@ -251,6 +281,23 @@ public class Buchungszeile implements Cloneable {
         return b;
     }
 
+    public static Buchungszeile from1822direktZeile(String zeile) {
+        Buchungszeile b = new Buchungszeile();
+        String[] columns = getColumns(zeile);
+        String s            = columns[1];
+        b.datum             = s.substring(6,10) + s.substring(3,5) + s.substring(0,2);
+        b.zeit              = s.substring(11,16);
+        b.quelleZiel        = columns[8] + " - " + columns[7];
+        b.buchungstext      = columns[14];
+        b.verwendungszweck  = columns[13];
+//            b.saldo  = readLong( columns[5] );
+        b.betrag = readLong( columns[4] );
+        b.waehrung          = "EUR";
+        b.hasSaldo          = false;
+//        b.pbetrag           = b.betrag;
+        return b;
+    }
+
     private static int readLong(String ds) {
         String orig = ds;
         if (ds==null) {
@@ -295,6 +342,9 @@ public class Buchungszeile implements Cloneable {
         }
         out[3] = kategorie;
         out[4] = datum;
+        if (zeit != null && zeit.length() == 5) {
+            out[4] = datum + " " + zeit;
+        }
         out[5] = quelleZiel;
         out[6] = buchungstext;
         out[7] = verwendungszweck;
@@ -390,7 +440,7 @@ public class Buchungszeile implements Cloneable {
 //    /**
 //     * @return liefert die Buchungszeile für die letzte eingelesene Datei-Zeile zurück (was chronologisch die erste Buchung ist (bei ING-DIBA)
 //     */
-//    public static Buchungszeile readIngDibaFile(File file, SortedMap<String, Buchungszeile> map) throws Exception {
+//    public static Buchungszeile readUmsatzFile(File file, SortedMap<String, Buchungszeile> map) throws Exception {
 //
 //        InputStreamReader reader            = new InputStreamReader(new FileInputStream(file),"windows-1252");
 //        BufferedReader br                   = new BufferedReader(reader);

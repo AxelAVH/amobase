@@ -1,14 +1,6 @@
 package de.amo.money;
 
-import de.amo.tools.IOToolsSelectItem;
-import de.amo.tools.IOToolsSelectMenue;
-import de.amo.tools.StringFormatter;
-
-import java.io.File;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 /** Der MoneyController vermittelt das transiente Datenmodell (MoneyTransient) zwischen der View (MoneyView) und der Datenbank (MoneyDatabase)
  *
@@ -39,16 +31,6 @@ public class MoneyController {
         return lastMessage;
     }
 
-
-//    private void addBuchungszeileInMessagePanel(Buchungszeile b) {
-//        String floatStringFromIntString = StringFormatter.getFloatStringFromIntString("" + b.pbetrag);
-//        while (floatStringFromIntString.length() < 10) {
-//            floatStringFromIntString = " " + floatStringFromIntString;
-//        }
-//
-//        moneyView.addMessage(b.quelleZiel + "\t" + b.verwendungszweck + "\t" + floatStringFromIntString);
-//    }
-
     public boolean isSaved() {
         return moneyTr.isSaved();
     }
@@ -64,21 +46,6 @@ public class MoneyController {
 
     public void refreshView() {
         moneyView.updateGui();
-    }
-
-    public class ErzeugePexport extends IOToolsSelectItem {
-        public ErzeugePexport(IOToolsSelectMenue menue) {
-            super(menue);
-            setAnzeigeText("P-Datenexport");
-        }
-
-        @Override
-        public boolean doIt() throws Exception {
-            File f = new File(moneyDatabase.getKontodir());
-            f = new File(f, "Datenexport.csv");
-            Buchungszeile.writePExportFile(f.getAbsolutePath(), moneyTr.getAktuelleDaten());
-            return true;
-        }
     }
 
 

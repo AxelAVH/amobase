@@ -18,7 +18,7 @@ public class MoneyTransient {
     boolean isSaved = true;
     String  kontonnr = "";
 
-    String monatsAbgrenzDatum        = null;
+//    String monatsAbgrenzDatum        = null;
 
     File lastBackupDatabaseFile;
 
@@ -31,6 +31,8 @@ public class MoneyTransient {
 
     File umsatzdateienDownloadDir;
 
+    UmsatzReaderIfc umsatzReader;
+
     public MoneyTransient(String kontonummer, File umsatzdateienDownloadDir) {
         this.umsatzdateienDownloadDir =  umsatzdateienDownloadDir;
         this.kontonnr                   = kontonummer;
@@ -42,8 +44,12 @@ public class MoneyTransient {
         return saldo;
     }
 
-    public int getPsaldo() {
-        return psaldo;
+    public UmsatzReaderIfc getUmsatzReader() {
+        return umsatzReader;
+    }
+
+    public void setUmsatzReader(UmsatzReaderIfc umsatzReader) {
+        this.umsatzReader = umsatzReader;
     }
 
     public SortedMap<String, Buchungszeile> getBuchungszeilen() {
@@ -87,24 +93,12 @@ public class MoneyTransient {
      */
     public void recalculate() {
 
-        saldo  = 0;
-        psaldo = 0;
-//        pSaldoMonatsanfang = 0;
+        saldo   = 0;
+        psaldo  = 0;
         message = "";
 
-        monatsAbgrenzDatum = null;
-        String heute = Datum.heute();
-        String tag   = heute.substring(6,8);
-        if (tag.startsWith("0")) {
-            monatsAbgrenzDatum = heute.substring(0,6) + "00";
-        } else {
-            monatsAbgrenzDatum = heute;
-        }
-
-        sortierteBuchungszeilen = new Sortierer().sortiere(buchungszeilen);
-
-        int lastHauptbuchungsnr = 0;
-        boolean isFirst = true;
+        int     lastHauptbuchungsnr = 0;
+        boolean isFirst             = true;
 
         for (Buchungszeile buchungszeile : sortierteBuchungszeilen) {
             if (isFirst) {

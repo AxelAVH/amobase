@@ -1,14 +1,8 @@
 package de.amo.money;
 
 import javax.swing.*;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.SortedMap;
+import java.util.*;
 
 /**
  * Created by private on 11.10.2015.
@@ -55,31 +49,38 @@ public class MoneyDatabase {
         List<File> verarbeiteteFiles = new ArrayList<>();
 
         for (int i = 0; i < files.length; i++) {
+
             File file = files[i];
-            String name = file.getName().toLowerCase();
-            if (name.startsWith("umsatzanzeige") && file.getName().endsWith(".csv")) {
 
+            if (datensaetzeVorher == 0 && verarbeiteteFiles.size() > 0) {
+                throw new RuntimeException("Beim Einlesen der ersten Buchungssätze einer Datenbank darf nur eine Datei vorgelegt werden.");
+            }
 
-                if (datensaetzeVorher == 0 && verarbeiteteFiles.size() > 0) {
-                    throw new RuntimeException("Beim Einlesen der ersten Buchungssätze einer Datenbank darf nur eine Datei vorgelegt werden.");
+            addMessage(moneyTr.getKontonnr() + " : Lese Datei " + file.getName());
+            try {
+                // die letzte in der Datei übermittelte Zeile ist in der Buchungsreihenfolge die Erste
+                Buchungszeile buchungszeileFirst = moneyTr.getUmsatzReader().readUmsatzFile(file, moneyTr);
+
+                if (datensaetzeVorher == 0) {
+                    buchungszeileFirst.isAllerersterSatz = true;
                 }
+                verarbeiteteFiles.add(file);
 
-                addMessage(moneyTr.getKontonnr() + " : Lese Datei " + file.getName());
-                try {
-                    // die letzte in der Datei übermittelte Zeile ist in der Buchungsreihenfolge die Erste
-//                    Buchungszeile buchungszeileFirst = readIngDibaFile(file, moneyTr);
-                    Buchungszeile buchungszeileFirst = new UmsatzReader_INGDIBA(moneyTr).readIngDibaFile(file);
-
-                    if (datensaetzeVorher == 0) {
-                        buchungszeileFirst.isAllerersterSatz = true;
-                    }
-                    verarbeiteteFiles.add(file);
-                } catch (Exception e) {
-                    addMessage("Abbruch: " + e);
-                    e.printStackTrace();
-                }
+            } catch (Exception e) {
+                addMessage("Abbruch: " + e);
+                e.printStackTrace();
             }
         }
+
+        //moneyTr.sortierteBuchungszeilen = moneyTr.getUmsatzReader().sortiere(moneyTr.buchungszeilen);
+        SortedMap<String, Buchungszeile> sortedMap = new TreeMap<String, Buchungszeile>();
+        for (Buchungszeile buchungszeile : moneyTr.buchungszeilen.values()) {
+            sortedMap.put(buchungszeile.getSortKey(), buchungszeile);
+        }
+
+        moneyTr.sortierteBuchungszeilen = new ArrayList<Buchungszeile>();
+        moneyTr.sortierteBuchungszeilen.addAll(sortedMap.values());
+
         moneyTr.recalculate();
 
         // Erst jetzt addieren, es können Exceptions geflogen sein wegen Lücken in den Dateien:

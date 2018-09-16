@@ -4,19 +4,22 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.SortedMap;
+import java.util.*;
 
 /**
  * Created by private on 09.02.2017.
  */
-public class UmsatzReader_INGDIBA {
+public class UmsatzReader_INGDIBA implements UmsatzReaderIfc {
 
 
     public UmsatzReader_INGDIBA() {
     }
 
-    public UmsatzReader_INGDIBA(MoneyTransient moneyTransient) {
-        this.moneyTransient = moneyTransient;
+    public static boolean isMyFiletype(File file) {
+
+        String fname = file.getName();
+
+        return fname.startsWith("Umsatzanzeige_");
     }
 
     public String ermittleKontonummer(File file) throws Exception {
@@ -63,7 +66,7 @@ public class UmsatzReader_INGDIBA {
 /* Liest alle Buchungssatz-Zeilen der Datei in Moneytransient.buchungszeilen ein
 
  */
-    public Buchungszeile readIngDibaFile(File file) throws Exception {
+    public Buchungszeile readUmsatzFile(File file, MoneyTransient moneyTransient) throws Exception {
 
         InputStreamReader reader            = new InputStreamReader(new FileInputStream(file),"windows-1252");
         BufferedReader br                   = new BufferedReader(reader);
