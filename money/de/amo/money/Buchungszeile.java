@@ -168,6 +168,7 @@ public class Buchungszeile implements Cloneable {
 
             if (b.datum.length() > 8) {
                 b.zeit          = columns[4].substring(9,14);
+                b.datum = b.datum.substring(0,8);
             }
 
             b.quelleZiel        = columns[5];
