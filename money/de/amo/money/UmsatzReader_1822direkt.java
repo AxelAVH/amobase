@@ -99,6 +99,11 @@ public class UmsatzReader_1822direkt implements de.amo.money.UmsatzReaderIfc {
             }
 
             Buchungszeile b   = Buchungszeile.from1822direktZeile(zeile);
+
+            if (b == null) {
+                // es gibt u.U. Zeilen ohne Wertstellungsdatum, die wiederholen sich in anderen Dateien mit anderem Aussehen, das macht Ärger
+                continue;
+            }
             buchungszeileLast = b;
             System.out.println(zeile);
 

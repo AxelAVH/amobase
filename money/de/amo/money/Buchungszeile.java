@@ -285,17 +285,23 @@ public class Buchungszeile implements Cloneable {
     public static Buchungszeile from1822direktZeile(String zeile) {
         Buchungszeile b = new Buchungszeile();
         String[] columns = getColumns(zeile);
-        String s            = columns[1];
-        b.datum             = s.substring(6,10) + s.substring(3,5) + s.substring(0,2);
-        b.zeit              = s.substring(11,16);
-        b.quelleZiel        = columns[8] + " - " + columns[7];
-        b.buchungstext      = columns[14];
-        b.verwendungszweck  = columns[13];
-//            b.saldo  = readLong( columns[5] );
-        b.betrag = readLong( columns[4] );
+        String s = columns[1];
+        b.datum = s.substring(6, 10) + s.substring(3, 5) + s.substring(0, 2);
+        b.zeit = s.substring(11, 16);
+        b.quelleZiel = columns[8] + " - " + columns[7];
+        b.buchungstext = columns[14];
+        b.verwendungszweck = columns[13];
+
+        // 1822direkt überträgt auch Buchungen, die noch keine Wertstellung haben.
+        // in einer folgenden Datei tauchen diese dann noch einmal auch, dabei kann sich Datum/Zeit und auch Buchungstag verändert haben
+        // was zum doppelten Anlegen führt.
+        if ("".equals(columns[3].trim())) {
+            return null;
+        }
+        b.betrag = readLong(columns[4]);
         b.waehrung          = "EUR";
         b.hasSaldo          = false;
-//        b.pbetrag           = b.betrag;
+
         return b;
     }
 
