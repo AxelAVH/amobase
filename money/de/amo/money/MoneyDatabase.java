@@ -102,7 +102,7 @@ public class MoneyDatabase {
 
         if (f.exists()) {
             try {
-                Buchungszeile.readDatabaseFile(f.getAbsolutePath(), moneyTr.getBuchungszeilen());
+                Buchungszeile.readDatabaseFile(f.getAbsolutePath(), moneyTr.getBuchungszeilen(), moneyTr.sortierteBuchungszeilen);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -163,6 +163,4 @@ public class MoneyDatabase {
         messageTextArea.repaint();
         messageTextArea.setCaretPosition(messageTextArea.getDocument().getLength());
     }
-
-
 }

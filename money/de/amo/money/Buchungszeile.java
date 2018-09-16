@@ -56,6 +56,21 @@ public class Buchungszeile implements Cloneable {
         return key;
     }
 
+    /** Liefert einen Key, nach dem sich die Buchungssätze chronologisch sortieren lassen
+     *  der Key ist auch für Sortierungen von Buchungssätzen geeignet, von denen einige aus der Datenbank kommen, andere soeben erst eingelesen wurden
+     *  und noch keine Hauptbuchungsnummer usw. erhalten haben
+     * @return
+     */
+    public String getSortKey() {
+        String key1 = "                    " + hauptbuchungsNr;
+        key1 = key1.substring( key1.length()-10 );
+        String key2 = "                    " + umbuchungNr;
+        key2 = key2.substring( key2.length()-10 );
+        String key3 = umbuchungsPro == true ? "a" : "b";
+        String sortkey = datum + "|" + key1 + "|" + key2 + "|" + key3 + "|" + getLfdNrWaehrendEinlesenS();
+        return sortkey;
+    }
+
     public boolean hasJahresumlage() {
         if (kommentar == null) {
             return false;
@@ -349,7 +364,7 @@ public class Buchungszeile implements Cloneable {
     }
 
 
-    public static int readDatabaseFile(String filename, SortedMap<String, Buchungszeile> map) throws Exception {
+    public static int readDatabaseFile(String filename, SortedMap<String, Buchungszeile> map, List<Buchungszeile> sortierteBuchungszeilen) throws Exception {
 
         InputStreamReader reader = new InputStreamReader(new FileInputStream(filename),"windows-1252");
         BufferedReader    br     = new BufferedReader(reader);
@@ -364,6 +379,7 @@ public class Buchungszeile implements Cloneable {
                 b.isAllerersterSatz = true;
             }
             map.put(b.getUniquenessKey(), b); // durch den Database-Datensatz wird eine bereits bestehende Zeile überschieben
+            sortierteBuchungszeilen.add(b);
         }
 
         reader.close();

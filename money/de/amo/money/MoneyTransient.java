@@ -22,6 +22,10 @@ public class MoneyTransient {
 
     File lastBackupDatabaseFile;
 
+    /**
+     * key: Unigueness-String der Buchungszeile
+     * value: die Buchungszeile
+     */
     SortedMap<String, Buchungszeile>    buchungszeilen          = new TreeMap<String, Buchungszeile>();
     List<Buchungszeile>                 sortierteBuchungszeilen = new ArrayList<Buchungszeile>();
 
@@ -105,9 +109,18 @@ public class MoneyTransient {
         for (Buchungszeile buchungszeile : sortierteBuchungszeilen) {
             if (isFirst) {
                 isFirst = false;
+
+                if (!buchungszeile.hasSaldo) {
+                    buchungszeile.saldo= buchungszeile.betrag;
+                }
+
                 saldo = buchungszeile.saldo;
             } else {
                 saldo += buchungszeile.betrag;
+
+                if (!buchungszeile.hasSaldo) {
+                    buchungszeile.saldo = saldo;
+                }
             }
 
             if (buchungszeile.hauptbuchungsNr > 0) {

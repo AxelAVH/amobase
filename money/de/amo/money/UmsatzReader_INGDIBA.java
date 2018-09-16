@@ -12,8 +12,6 @@ import java.util.SortedMap;
 public class UmsatzReader_INGDIBA {
 
 
-    MoneyTransient moneyTransient;
-
     public UmsatzReader_INGDIBA() {
     }
 
@@ -67,8 +65,6 @@ public class UmsatzReader_INGDIBA {
  */
     public Buchungszeile readIngDibaFile(File file) throws Exception {
 
-//        SortedMap<String, Buchungszeile> map = moneyTransient.getBuchungszeilen();
-
         InputStreamReader reader            = new InputStreamReader(new FileInputStream(file),"windows-1252");
         BufferedReader br                   = new BufferedReader(reader);
         Buchungszeile  buchungszeileLast    = null;
@@ -78,7 +74,7 @@ public class UmsatzReader_INGDIBA {
         String          kontoZeilenAnfang2  = "Konto;";
         String          kontoZeilenAnfang3  = "IBAN;";
         boolean         isFormatApril2018   = false;
-
+        List<Buchungszeile> bZeilenDesFiles = new ArrayList<>();
 
         while ((zeile = br.readLine()) != null) {
 
@@ -124,14 +120,21 @@ public class UmsatzReader_INGDIBA {
             if (!moneyTransient.getBuchungszeilen().containsKey(b.getUniquenessKey())) {   // durch den Umsatz-Datensatz wird eine bereits bestehende Zeile NICHT überschieben
                 //System.out.println("KEY: " + b.getUniquenessKey());
                 moneyTransient.getBuchungszeilen().put(b.getUniquenessKey(), b);
+                bZeilenDesFiles.add(b);
             }
         }
         br.close();
         reader.close();
 
+        int lfd = 0;
+        for (int i = bZeilenDesFiles.size() - 1; i >= 0; i--) {
+            Buchungszeile b = bZeilenDesFiles.get(i);
+            lfd++;                              // Diese Nummer soll bei "1" beginnend hochzählen
+            b.setLfdNrWaehrendEinlesen(lfd);
+        }
+
+
         return buchungszeileLast;
     }
-
-
 
 }
