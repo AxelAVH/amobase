@@ -62,12 +62,17 @@ public class Buchungszeile implements Cloneable {
         return lfdNrWaehrendEinlesenS;
     }
 
+    /** Anhand dieses Keys sollen gleichartige Buchungsätze aus den Dateien der Banken erkannt werden.
+     * ! 1822direkt liefert kein Saldo, daher wurde er hier komplett entfernt.
+     */
     public String getUniquenessKey() {
         String s = "                    " + betrag;
         s = s.substring(s.length() - 20);
-        String t = "                    " + saldo;
-        t = t.substring(t.length() - 20);
-        String key = datum + "~" + zeit + "~" + s + "~" + t + "~" + quelleZiel.trim() + "~" + verwendungszweck.trim();
+        // Der Saldo ist nicht geeignet, der wird nur
+//        String t = "                    " + saldo;
+//        t = t.substring(t.length() - 20);
+//        String key = datum + "~" + zeit + "~" + s + "~" + t + "~" + quelleZiel.trim() + "~" + verwendungszweck.trim();
+        String key = datum + "~" + zeit + "~" + s + "~" + quelleZiel.trim() + "~" + verwendungszweck.trim();
 
         while (key.contains( "  " )) {
             key = key.replace( "  ", " " );
