@@ -101,6 +101,8 @@ public class MoneyTransient {
         boolean isFirst             = true;
 
         for (Buchungszeile buchungszeile : sortierteBuchungszeilen) {
+
+
             if (isFirst) {
                 isFirst = false;
 
@@ -114,6 +116,10 @@ public class MoneyTransient {
 
                 if (!buchungszeile.hasSaldo) {
                     buchungszeile.saldo = saldo;
+                } else {
+                    if (buchungszeile.saldo != saldo) {
+                            System.out.println("Neu berechneter Saldo weicht vom gespeicherten Saldo ab: saldo berechnet: " + saldo + " <-> " + buchungszeile.saldo + "\n" + buchungszeile.toShow());
+                    }
                 }
             }
 
