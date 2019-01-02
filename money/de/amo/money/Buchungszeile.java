@@ -72,7 +72,14 @@ public class Buchungszeile implements Cloneable {
 //        String t = "                    " + saldo;
 //        t = t.substring(t.length() - 20);
 //        String key = datum + "~" + zeit + "~" + s + "~" + t + "~" + quelleZiel.trim() + "~" + verwendungszweck.trim();
-        String key = datum + "~" + zeit + "~" + s + "~" + quelleZiel.trim() + "~" + verwendungszweck.trim();
+
+        // Verwendungszweck wird bei 1822direkt manchmal gekürzt: "Kredit Haus Axel und Susanne Mölle", owbwohl es auch Zeilen mit 35 Zeichen gibt
+        String vzweckTmp = verwendungszweck.trim();
+        if (vzweckTmp.length()>34) {
+            vzweckTmp = vzweckTmp.substring(0,34);
+        }
+
+        String key = datum + "~" + zeit + "~" + s + "~" + quelleZiel.trim() + "~" + vzweckTmp;
 
         while (key.contains( "  " )) {
             key = key.replace( "  ", " " );
