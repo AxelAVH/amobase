@@ -1,0 +1,126 @@
+package de.amo.view;
+
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
+
+/**
+ * Created by amo on 28.08.2015.
+ */
+public class EditField extends JPanel {
+
+    protected JTextField inputField;
+    private   JLabel label;
+    private boolean isReadOnly;
+
+
+    public EditField(String fuehrungstext, Object defaultText, int inputwidth) {
+
+        if (AmoStyle.isGuiTestMode()) {
+            setBackground(Color.yellow);
+        } else {
+//            setBackground(Color .green);
+        }
+
+        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.X_AXIS));
+
+        add(createLeadingFixArea());
+        // Label
+        label = createLabel(fuehrungstext);
+        add(label);
+        // Elastischer Zwischenraum
+        add(createElasticArea());
+        // Eingabefeld:
+        inputField = createInputField(defaultText);
+
+        Dimension dimension = new Dimension(inputwidth, 20);
+        inputField.setMinimumSize(dimension);
+        inputField.setMaximumSize(dimension);
+        inputField.setPreferredSize(dimension);
+
+        add(inputField);
+        add(createTrailingFixArea());
+    }
+
+
+    public EditField(String fuehrungstext, Object defaultText, int inputwidth, int leftgap, int rightgap, int topgap, int bottomgap) {
+        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.Y_AXIS));
+        JPanel spaceLine = new JPanel();
+        Dimension dimension = new Dimension(100, topgap);
+        spaceLine.setSize(dimension);
+        add(spaceLine);
+
+        // EditField im EditField - bollshitt
+        EditField editField = new EditField(fuehrungstext, defaultText, inputwidth);
+        add(editField);
+        inputField = editField.inputField;
+        label      = editField.label;
+        dimension = new Dimension(100, bottomgap);
+        spaceLine = new JPanel();
+        spaceLine.setSize(dimension);
+        add(spaceLine);
+    }
+
+
+    protected JLabel createLabel(String fuehrungstext) {
+        JLabel label = new JLabel(fuehrungstext, JLabel.LEFT);
+        if (AmoStyle.isGuiTestMode()) {
+            label.setBackground(Color.CYAN);
+        } else {
+
+        }
+        label.setOpaque(true);
+        return label;
+    }
+
+    protected JPanel createElasticArea() {
+        JPanel elastic = new JPanel();
+        return elastic;
+    }
+
+    protected JPanel createLeadingFixArea() {
+        return createFixArea(10);
+    }
+
+    protected JPanel createTrailingFixArea() {
+        return createFixArea(50);
+    }
+
+    protected JPanel createFixArea(int width ) {
+        JPanel fix = new JPanel();
+        Dimension dim = new Dimension(width,10);
+        fix.setMinimumSize(dim);
+        fix.setMaximumSize(dim);
+        return fix;
+
+    }
+
+    protected JTextField createInputField(Object defaultText) {
+        JTextField inputField = new JTextField((String)defaultText);
+
+        if (AmoStyle.isGuiTestMode()) {
+            inputField.setForeground(Color.BLUE);
+            inputField.setBackground(Color.YELLOW);
+        }
+        return inputField;
+    }
+
+    public String getInputString() {
+        return inputField.getText();
+    }
+    public void setStringValue(String value) {
+        inputField.setText(value);
+    }
+
+    public JLabel getLabel() {
+        return label;
+    }
+
+    public void setEnabled(boolean b) {
+        inputField.setEnabled(b);
+    }
+
+    public void setHorizontalAlignment(int alignment) {
+        inputField.setHorizontalAlignment(alignment);
+    }
+}
