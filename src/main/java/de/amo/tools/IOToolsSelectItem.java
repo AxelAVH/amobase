@@ -1,17 +1,17 @@
 package de.amo.tools;
 /**
- * Hilfsklasse für Selekt-Programmierungen in MR-Tools, siehe weiter in IOToolsSelectMenue<br>
+ * Hilfsklasse fÃ¼r Selekt-Programmierungen in MR-Tools, siehe weiter in IOToolsSelectMenue<br>
  * Beschreibt einen einzelnen zu selektierenden Eintrag durch Anzeigetext und bei Selektion
- * auszuführende Methode ("doIt()")<br>
- * Wird durch dieses Item ein dokumentierter Change am Produkt (z.B. Vera) durchgeführt,
+ * auszufÃ¼hrende Methode ("doIt()")<br>
+ * Wird durch dieses Item ein dokumentierter Change am Produkt (z.B. Vera) durchgefÃ¼hrt,
  * ist die Change-ID (z.b. gem. der ACCESS-Datenbank VeraChanges.mdb) in der Methode
- * setAnzeigeText mit zu übergeben.
- * @author Axel Möller
+ * setAnzeigeText mit zu Ã¼bergeben.
+ * @author Axel MÃ¶ller
  */
 public abstract class IOToolsSelectItem {
 
     /*
-     * Diverse Ausführungs-Status-Werte
+     * Diverse AusfÃ¼hrungs-Status-Werte
      */
     public final static int STATUS_UNKNOWN = 0;
     public final static int STATUS_INITIAL = 1;
@@ -36,11 +36,11 @@ public abstract class IOToolsSelectItem {
 
 
     /**
-     * Führt die mit dem Item verknüpfte Aktion aus. Liefert false, wenn danach das
+     * FÃ¼hrt die mit dem Item verknÃ¼pfte Aktion aus. Liefert false, wenn danach das
      * aktuelle Menue verlassen werden soll, true, wenn das Menue wieder angezeigt werden
      * soll.<br>
-     * Diese Methode kann überschrieben werden, um FÜR EINEN Mandanten eine Aktion auszuführen.
-     * Falls etwas FÜR ALLE Mandanten ausgeführt werden soll, kann diese Methode unverändert
+     * Diese Methode kann Ã¼berschrieben werden, um FÃœR EINEN Mandanten eine Aktion auszufÃ¼hren.
+     * Falls etwas FÃœR ALLE Mandanten ausgefÃ¼hrt werden soll, kann diese Methode unverÃ¤ndert
      * belassen werden und stattdessen die gleichnamige Methode mit MandantIfc als Parameter
      * verwendet werden.
      */
